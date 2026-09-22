@@ -667,6 +667,11 @@ select:focus-visible {
   flex-shrink: 0;
 }
 
+.basket-actions {
+  display: flex;
+  gap: 6px;
+}
+
 .basket-item-right strong {
   font-size: 15px;
   white-space: nowrap;
@@ -687,6 +692,16 @@ select:focus-visible {
 .icon-button:hover {
   transform: translateY(-1px);
   background: #fceee8;
+}
+
+.duplicate-button {
+  border-color: #d8e3d4;
+  background: #f4f8f1;
+  color: #557057;
+}
+
+.duplicate-button:hover {
+  background: #eaf2e6;
 }
 
 .basket-total {

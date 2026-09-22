@@ -1,14 +1,15 @@
-import { Package, Trash2 } from "lucide-react";
+import { Copy, Package, Trash2 } from "lucide-react";
 import type { BasketItem } from "../types/basket";
 import { CURRENCIES } from "../types/currency";
 
 interface BasketProps {
   items: BasketItem[];
   onRemove: (id: string) => void;
+  onDuplicate: (item: BasketItem) => void;
   onClear: () => void;
 }
 
-export function Basket({ items, onRemove, onClear }: BasketProps) {
+export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
   const total = items.reduce((sum, item) => sum + item.convertedAmount, 0);
 
   return (
@@ -58,13 +59,22 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
                     {item.convertedAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
                     ₼
                   </strong>
-                  <button
-                    className="icon-button"
-                    aria-label={`Remove ${item.label}`}
-                    onClick={() => onRemove(item.id)}
-                  >
-                    <Trash2 size={15} />
-                  </button>
+                  <div className="basket-actions">
+                    <button
+                      className="icon-button duplicate-button"
+                      aria-label={`Duplicate ${item.label}`}
+                      onClick={() => onDuplicate(item)}
+                    >
+                      <Copy size={15} />
+                    </button>
+                    <button
+                      className="icon-button"
+                      aria-label={`Remove ${item.label}`}
+                      onClick={() => onRemove(item.id)}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 </div>
               </li>
             ))}

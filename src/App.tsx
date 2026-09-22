@@ -38,6 +38,13 @@ function App() {
     setBasket((prev) => prev.filter((item) => item.id !== id));
   }
 
+  function duplicateBasketItem(item: BasketItem) {
+    setBasket((prev) => [
+      ...prev,
+      { ...item, id: crypto.randomUUID(), createdAt: Date.now() },
+    ]);
+  }
+
   return (
     <div className="app-shell">
       <Header lastUpdated={dashboard.lastUpdated} />
@@ -104,7 +111,12 @@ function App() {
 
         <section className="two-column">
           <Converter rates={ratesMap} onSaveToBasket={addToBasket} />
-          <Basket items={basket} onRemove={removeFromBasket} onClear={resetBasket} />
+          <Basket
+            items={basket}
+            onRemove={removeFromBasket}
+            onDuplicate={duplicateBasketItem}
+            onClear={resetBasket}
+          />
         </section>
 
         <HistoryChart
