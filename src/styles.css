@@ -402,6 +402,28 @@ select:focus-visible {
   font-size: 12px;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #dfe5dc;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.8);
+  color: #59645b;
+}
+
+.theme-button:hover {
+  border-color: #bcc8b9;
+  background: #ffffff;
+}
+
 .cost-breakdown strong {
   color: #273429;
   font-weight: 700;
@@ -986,4 +1008,103 @@ select:focus-visible {
     margin-left: -4px;
     margin-right: -4px;
   }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  color: #e8f0e5;
+  background: #111711;
+}
+
+:root[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at top right, rgba(55, 82, 52, 0.34), transparent 35%),
+    #111711;
+}
+
+:root[data-theme="dark"] .brand-subtitle,
+:root[data-theme="dark"] .section-meta,
+:root[data-theme="dark"] .muted-note,
+:root[data-theme="dark"] .footer,
+:root[data-theme="dark"] .rate-card-foot,
+:root[data-theme="dark"] .basket-item-detail,
+:root[data-theme="dark"] .panel-heading p {
+  color: #9eab9c;
+}
+
+:root[data-theme="dark"] .status-pill,
+:root[data-theme="dark"] .theme-button,
+:root[data-theme="dark"] .refresh-button,
+:root[data-theme="dark"] .swap-button,
+:root[data-theme="dark"] .rate-card,
+:root[data-theme="dark"] .panel,
+:root[data-theme="dark"] .retailer-chip,
+:root[data-theme="dark"] .quick-amount,
+:root[data-theme="dark"] .save-label-input,
+:root[data-theme="dark"] .share-button,
+:root[data-theme="dark"] .converter-grid input,
+:root[data-theme="dark"] .converter-grid select,
+:root[data-theme="dark"] .shipping-grid input {
+  border-color: #334334;
+  background: #1a231a;
+  color: #e8f0e5;
+}
+
+:root[data-theme="dark"] .hero {
+  border-color: #334334;
+  background: linear-gradient(135deg, rgba(26,35,26,0.98), rgba(33,49,33,0.94));
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.2);
+}
+
+:root[data-theme="dark"] .hero p,
+:root[data-theme="dark"] .conversion-result span,
+:root[data-theme="dark"] .cost-breakdown > div,
+:root[data-theme="dark"] .shipping-grid label,
+:root[data-theme="dark"] .converter-grid label {
+  color: #aab8a8;
+}
+
+:root[data-theme="dark"] .conversion-result,
+:root[data-theme="dark"] .cost-breakdown,
+:root[data-theme="dark"] .chart-wrap,
+:root[data-theme="dark"] .basket-item,
+:root[data-theme="dark"] .basket-empty {
+  border-color: #334334;
+  background: #151d15;
+}
+
+:root[data-theme="dark"] .cost-breakdown strong,
+:root[data-theme="dark"] .basket-item-total,
+:root[data-theme="dark"] .rate-card-top,
+:root[data-theme="dark"] .currency-code {
+  color: #d8e8d3;
+}
+
+:root[data-theme="dark"] .rate-card:hover,
+:root[data-theme="dark"] .rate-card.active {
+  border-color: #718b6d;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+:root[data-theme="dark"] .retailer-chip.active,
+:root[data-theme="dark"] .save-button,
+:root[data-theme="dark"] .basket-total {
+  background: #d3e7c4;
+  border-color: #d3e7c4;
+  color: #162016;
+}
+
+:root[data-theme="dark"] .quick-amount.active,
+:root[data-theme="dark"] .quick-amount:hover {
+  border-color: #718b6d;
+  background: #2c432d;
+  color: #e8f0e5;
+}
+
+:root[data-theme="dark"] .chart-dot {
+  fill: #151d15;
+}
+
+:root[data-theme="dark"] .footer {
+  border-color: #334334;
 }

@@ -1,5 +1,5 @@
 import { RefreshCw } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Basket } from "./components/Basket";
 import { Converter } from "./components/Converter";
 import { Header } from "./components/Header";
@@ -12,15 +12,26 @@ import { BASKET_STORAGE_KEY, isBasketItem } from "./types/basket";
 import type { SupportedCurrency } from "./types/currency";
 import { CURRENCIES } from "./types/currency";
 
+type Theme = "light" | "dark";
+
+function isTheme(value: unknown): value is Theme {
+  return value === "light" || value === "dark";
+}
+
 function App() {
   const [baseCurrency] = useState<SupportedCurrency>("AZN");
   const dashboard = useCurrencyDashboard(baseCurrency);
+  const [theme, setTheme] = useLocalStorage<Theme>("manatnav:theme", "light", isTheme);
   const [basket, setBasket, resetBasket] = useLocalStorage<BasketItem[]>(
     BASKET_STORAGE_KEY,
     [],
     (value): value is BasketItem[] =>
       Array.isArray(value) && value.every(isBasketItem)
   );
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   const ratesMap = useMemo(
     () =>
@@ -47,7 +58,11 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Header lastUpdated={dashboard.lastUpdated} />
+      <Header
+        lastUpdated={dashboard.lastUpdated}
+        theme={theme}
+        onToggleTheme={() => setTheme(theme === "light" ? "dark" : "light")}
+      />
 
       <main className="page">
         <section className="hero">
