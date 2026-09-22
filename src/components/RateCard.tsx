@@ -1,5 +1,6 @@
 import type { SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface RateCardProps {
   currency: SupportedCurrency;
@@ -10,13 +11,15 @@ interface RateCardProps {
 
 export function RateCard({ currency, rate, onClick, active }: RateCardProps) {
   const meta = CURRENCIES[currency];
+  const { t } = useLanguage();
+  const formattedRate = rate.toLocaleString("en-US", { maximumFractionDigits: 4 });
 
   return (
     <button
       className={`rate-card ${active ? "active" : ""}`}
       onClick={onClick}
       aria-pressed={active}
-      aria-label={`1 AZN equals ${rate.toLocaleString("en-US", { maximumFractionDigits: 4 })} ${meta.name}, select to view history`}
+      aria-label={t("selectHistory", { rate: formattedRate, value: meta.name })}
     >
       <div className="rate-card-top">
         <span className="currency-code">{currency}</span>
@@ -27,7 +30,7 @@ export function RateCard({ currency, rate, onClick, active }: RateCardProps) {
         {rate.toLocaleString("en-US", { maximumFractionDigits: 4 })}
       </div>
 
-      <div className="rate-card-foot">1 AZN → {currency}</div>
+      <div className="rate-card-foot">{t("rateFoot", { value: currency })}</div>
     </button>
   );
 }

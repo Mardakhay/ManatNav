@@ -1,6 +1,7 @@
 import type { HistoricalRateRow, SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
 import { HISTORY_RANGES, type HistoryRange } from "../services/frankfurter";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface HistoryChartProps {
   rows: HistoricalRateRow[];
@@ -11,6 +12,7 @@ interface HistoryChartProps {
 }
 
 export function HistoryChart({ rows, quote, loading, range, onRangeChange }: HistoryChartProps) {
+  const { t } = useLanguage();
   const width = 760;
   const height = 280;
   const paddingX = 28;
@@ -41,12 +43,12 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
   }
 
   return (
-    <section className="panel" aria-label="Historical exchange rates">
+    <section className="panel" aria-label={t("historicalRates")}>
       <div className="panel-heading">
         <div>
-          <div className="eyebrow">HISTORY</div>
-          <h2>AZN vs {quote}</h2>
-          <p>Monthly reference rate over the last {range} months.</p>
+          <div className="eyebrow">{t("historyEyebrow")}</div>
+          <h2>{t("historyTitle", { value: quote })}</h2>
+          <p>{t("historyDescription", { value: range })}</p>
         </div>
 
         <div className="legend-value">
@@ -57,8 +59,8 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
         </div>
       </div>
 
-      <div className="history-range-controls" role="group" aria-label="History range">
-        <span>Range</span>
+      <div className="history-range-controls" role="group" aria-label={t("historyRange")}>
+        <span>{t("historyRange")}</span>
         {HISTORY_RANGES.map((option) => (
           <button
             key={option}
@@ -73,7 +75,7 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
 
       <div className="chart-wrap">
         {loading ? (
-          <div className="chart-state" role="status">Loading history…</div>
+          <div className="chart-state" role="status">{t("loadingHistory")}</div>
         ) : rows.length ? (
           <svg
             viewBox={`0 0 ${width} ${height}`}
@@ -117,7 +119,7 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
             })}
           </svg>
         ) : (
-          <div className="chart-state">No historical data returned.</div>
+          <div className="chart-state">{t("noHistory")}</div>
         )}
       </div>
     </section>

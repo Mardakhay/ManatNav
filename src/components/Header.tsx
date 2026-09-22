@@ -1,4 +1,5 @@
 import { Activity, CircleDollarSign, Moon, Sun } from "lucide-react";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface HeaderProps {
   lastUpdated: string | null;
@@ -7,6 +8,8 @@ interface HeaderProps {
 }
 
 export function Header({ lastUpdated, theme, onToggleTheme }: HeaderProps) {
+  const { language, t, toggleLanguage } = useLanguage();
+  const nextLanguage = language === "en" ? t("azerbaijani") : t("english");
   return (
     <header className="topbar">
       <div className="brand">
@@ -15,7 +18,7 @@ export function Header({ lastUpdated, theme, onToggleTheme }: HeaderProps) {
         </div>
         <div>
           <div className="brand-name">ManatNav</div>
-          <div className="brand-subtitle">AZN Smart Dashboard</div>
+          <div className="brand-subtitle">{t("brandSubtitle")}</div>
         </div>
       </div>
 
@@ -23,9 +26,17 @@ export function Header({ lastUpdated, theme, onToggleTheme }: HeaderProps) {
         <div className="status-pill" role="status">
           <Activity size={15} aria-hidden="true" />
           <span>
-            Updated {lastUpdated ? new Date(lastUpdated).toLocaleDateString("en-GB") : "—"}
+            {t("updated", { value: lastUpdated ? new Date(lastUpdated).toLocaleDateString(language === "az" ? "az-AZ" : "en-GB") : "—" })}
           </span>
         </div>
+        <button
+          className="language-button"
+          onClick={toggleLanguage}
+          aria-label={t("switchLanguage", { value: nextLanguage })}
+          title={t("switchLanguage", { value: nextLanguage })}
+        >
+          {language === "en" ? "AZ" : "EN"}
+        </button>
         <button
           className="theme-button"
           onClick={onToggleTheme}

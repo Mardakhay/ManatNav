@@ -1,6 +1,7 @@
 import { Copy, Package, Trash2 } from "lucide-react";
 import type { BasketItem } from "../types/basket";
 import { CURRENCIES } from "../types/currency";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface BasketProps {
   items: BasketItem[];
@@ -10,15 +11,16 @@ interface BasketProps {
 }
 
 export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
+  const { t } = useLanguage();
   const total = items.reduce((sum, item) => sum + item.convertedAmount, 0);
 
   return (
-    <section className="panel accent-panel basket-panel" aria-label="Shopping basket">
+    <section className="panel accent-panel basket-panel" aria-label={t("basketTitle")}>
       <div className="panel-heading">
         <div>
-          <div className="eyebrow">SAVED BASKET</div>
-          <h2>Your shopping basket</h2>
-          <p>Saved calculations persist in your browser between visits.</p>
+          <div className="eyebrow">{t("savedBasket")}</div>
+          <h2>{t("basketTitle")}</h2>
+          <p>{t("basketDescription")}</p>
         </div>
         <div className="panel-icon" aria-hidden="true">
           <Package size={20} />
@@ -26,12 +28,12 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
       </div>
 
       <div className="basket-count" aria-live="polite">
-        {items.length} {items.length === 1 ? "saved item" : "saved items"}
+        {items.length} {items.length === 1 ? t("savedItem") : t("savedItems")}
       </div>
 
       {items.length === 0 ? (
         <div className="basket-empty">
-          No items saved yet. Convert a price and save it to build your basket.
+          {t("noItems")}
         </div>
       ) : (
         <>
@@ -40,15 +42,15 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
               <li key={item.id} className="basket-item">
                 <div className="basket-item-info">
                   <strong>{item.label}</strong>
-                  <span className="basket-item-detail">Product: {formatBasketAmount(item.amount, item.currency)}</span>
+                  <span className="basket-item-detail">{t("product")}: {formatBasketAmount(item.amount, item.currency)}</span>
                   {item.shipping > 0 && (
-                    <span className="basket-item-detail">Shipping: {formatBasketAmount(item.shipping, item.currency)}</span>
+                    <span className="basket-item-detail">{t("shipping")}: {formatBasketAmount(item.shipping, item.currency)}</span>
                   )}
                   {item.serviceFee !== undefined && item.serviceFee > 0 && (
-                    <span className="basket-item-detail">Service fee: {formatBasketAmount(item.serviceFee, item.currency)}</span>
+                    <span className="basket-item-detail">{t("serviceFee")}: {formatBasketAmount(item.serviceFee, item.currency)}</span>
                   )}
                   <span className="basket-item-total">
-                    Order total: {formatBasketAmount(
+                    {t("orderTotal")}: {formatBasketAmount(
                       item.amount + item.shipping + (item.serviceFee ?? 0),
                       item.currency
                     )}
@@ -62,14 +64,14 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
                   <div className="basket-actions">
                     <button
                       className="icon-button duplicate-button"
-                      aria-label={`Duplicate ${item.label}`}
+                      aria-label={t("duplicate", { value: item.label })}
                       onClick={() => onDuplicate(item)}
                     >
                       <Copy size={15} />
                     </button>
                     <button
                       className="icon-button"
-                      aria-label={`Remove ${item.label}`}
+                      aria-label={t("remove", { value: item.label })}
                       onClick={() => onRemove(item.id)}
                     >
                       <Trash2 size={15} />
@@ -81,7 +83,7 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
           </ul>
 
           <div className="basket-total" aria-live="polite">
-            <span>Total estimated cost</span>
+            <span>{t("totalEstimatedCost")}</span>
             <strong>
               {total.toLocaleString("en-US", { maximumFractionDigits: 2 })} ₼
             </strong>
@@ -90,12 +92,12 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
           <button
             className="clear-basket-button"
             onClick={() => {
-              if (window.confirm("Remove all items from your basket?")) {
+              if (window.confirm(t("confirmClearBasket"))) {
                 onClear();
               }
             }}
           >
-            Clear basket
+            {t("clearBasket")}
           </button>
         </>
       )}

@@ -11,6 +11,7 @@ import type { BasketItem } from "./types/basket";
 import { BASKET_STORAGE_KEY, isBasketItem } from "./types/basket";
 import type { SupportedCurrency } from "./types/currency";
 import { CURRENCIES } from "./types/currency";
+import { useLanguage } from "./contexts/LanguageContext";
 
 type Theme = "light" | "dark";
 
@@ -19,6 +20,7 @@ function isTheme(value: unknown): value is Theme {
 }
 
 function App() {
+  const { t } = useLanguage();
   const [baseCurrency] = useState<SupportedCurrency>("AZN");
   const dashboard = useCurrencyDashboard(baseCurrency);
   const [theme, setTheme] = useLocalStorage<Theme>("manatnav:theme", "light", isTheme);
@@ -67,11 +69,10 @@ function App() {
       <main className="page">
         <section className="hero">
           <div>
-            <div className="eyebrow">AZERBAIJAN · CURRENCY INTELLIGENCE</div>
-            <h1>Your money, translated.</h1>
+            <div className="eyebrow">{t("heroEyebrow")}</div>
+            <h1>{t("heroTitle")}</h1>
             <p>
-              Track what the Azerbaijani manat is worth abroad, convert shopping
-              prices, and watch monthly currency trends from one dashboard.
+              {t("heroDescription")}
             </p>
           </div>
 
@@ -79,26 +80,26 @@ function App() {
             className="refresh-button"
             onClick={() => void dashboard.refresh()}
             disabled={dashboard.loading}
-            aria-label="Refresh exchange rates"
+            aria-label={t("refresh")}
           >
             <RefreshCw size={17} className={dashboard.loading ? "spin" : ""} />
-            Refresh
+            {t("refresh")}
           </button>
         </section>
 
         {dashboard.error && (
           <div className="error-banner" role="alert">
-            {dashboard.error} Check your connection and try again.
+            {dashboard.error} {t("updatedCheckConnection")}
           </div>
         )}
 
         <section className="section-block">
           <div className="section-title-row">
             <div>
-              <div className="eyebrow">LIVE SNAPSHOT</div>
-              <h2>1 AZN in major currencies</h2>
+              <div className="eyebrow">{t("liveSnapshot")}</div>
+              <h2>{t("majorCurrencies")}</h2>
             </div>
-            <span className="section-meta">Base: AZN ₼</span>
+            <span className="section-meta">{t("base")}</span>
           </div>
 
           <div className="rates-grid">
@@ -107,7 +108,7 @@ function App() {
                   <div className="rate-card skeleton-card" key={code} aria-hidden="true" />
                 ))
               : dashboard.rates.length === 0 && !dashboard.error
-                ? <div className="chart-state" style={{ gridColumn: "1 / -1" }}>No rate data available right now.</div>
+                ? <div className="chart-state" style={{ gridColumn: "1 / -1" }}>{t("noRateData")}</div>
                 : dashboard.rates.map((row) => (
                     <RateCard
                       key={row.quote}
@@ -144,13 +145,13 @@ function App() {
 
         {dashboard.historyError && (
           <div className="muted-note history-note" role="alert">
-            {dashboard.historyError}
+            {dashboard.historyError} {t("updatedCheckConnection")}
           </div>
         )}
 
         <footer className="footer">
           <span>ManatNav — {CURRENCIES[baseCurrency].name} dashboard</span>
-          <span>Reference rates from Frankfurter · Not financial advice</span>
+          <span>{t("footerRates")}</span>
         </footer>
       </main>
     </div>

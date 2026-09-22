@@ -10,6 +10,7 @@ import {
 } from "../services/share";
 import type { SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
+import { useLanguage } from "../contexts/LanguageContext";
 
 interface ConverterProps {
   rates: Record<string, number>;
@@ -30,6 +31,7 @@ function formatAmount(value: number, currency: SupportedCurrency): string {
 }
 
 export function Converter({ rates, onSaveToBasket }: ConverterProps) {
+  const { t } = useLanguage();
   const sharedState = useMemo(() => readCalculationFromUrl(), []);
   const initialRetailerId = sharedState?.retailerId ?? DEFAULT_RETAILER_ID;
   const initialRetailer =
@@ -136,19 +138,19 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
   }
 
   return (
-    <section className="panel" aria-label="Currency converter">
+    <section className="panel" aria-label={t("shoppingTool")}>
       <div className="panel-heading">
         <div>
-          <div className="eyebrow">SHOPPING TOOL</div>
-          <h2>Convert before you buy</h2>
-          <p>See what your overseas order costs in Azerbaijani manat.</p>
+          <div className="eyebrow">{t("shoppingTool")}</div>
+          <h2>{t("converterTitle")}</h2>
+          <p>{t("converterDescription")}</p>
         </div>
         <div className="panel-icon" aria-hidden="true">
           <ShoppingBag size={20} />
         </div>
       </div>
 
-      <div className="retailer-presets" role="group" aria-label="Retailer presets">
+      <div className="retailer-presets" role="group" aria-label={t("retailerPresets")}>
         {RETAILERS.map((preset) => (
           <button
             key={preset.id}
@@ -161,8 +163,8 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
         ))}
       </div>
 
-      <div className="quick-amounts" role="group" aria-label="Quick amount presets">
-        <span className="quick-amounts-label">Quick amount</span>
+      <div className="quick-amounts" role="group" aria-label={t("quickAmount")}>
+        <span className="quick-amounts-label">{t("quickAmount")}</span>
         {QUICK_AMOUNTS.map((quickAmount) => (
           <button
             key={quickAmount}
@@ -177,19 +179,19 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
 
       <div className="converter-grid">
         <label>
-          Amount
+          {t("amount")}
           <input
             type="number"
             min="0"
             step="0.01"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
-            aria-label="Amount to convert"
+            aria-label={t("amount")}
           />
         </label>
 
         <label>
-          From
+          {t("from")}
           <select value={from} onChange={(event) => setFrom(event.target.value as SupportedCurrency)}>
             {Object.keys(CURRENCIES).map((code) => (
               <option key={code} value={code}>{code}</option>
@@ -199,7 +201,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
 
         <button
           className="swap-button"
-          aria-label="Swap from and to currencies"
+          aria-label={t("swapCurrencies")}
           onClick={() => {
             setFrom(to);
             setTo(from);
@@ -209,7 +211,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
         </button>
 
         <label>
-          To
+          {t("to")}
           <select value={to} onChange={(event) => setTo(event.target.value as SupportedCurrency)}>
             {Object.keys(CURRENCIES).map((code) => (
               <option key={code} value={code}>{code}</option>
@@ -218,12 +220,12 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
         </label>
 
         <div className="conversion-result">
-          <span>Estimated result</span>
+          <span>{t("estimatedResult")}</span>
           <strong>
             {converted === null
               ? total === null
-                ? "Enter valid amounts"
-                : "Rate unavailable"
+                ? t("enterValidAmounts")
+                : t("rateUnavailable")
               : `${converted.toLocaleString("en-US", {
                   maximumFractionDigits: 2,
                 })} ${CURRENCIES[to].symbol}`}
@@ -231,21 +233,21 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
         </div>
       </div>
 
-      <div className="cost-breakdown" aria-label="Shopping cost breakdown">
+      <div className="cost-breakdown" aria-label={t("costBreakdown")}>
         <div>
-          <span>Product</span>
+          <span>{t("product")}</span>
           <strong>{numericAmount === null ? "—" : formatAmount(numericAmount, from)}</strong>
         </div>
         <div>
-          <span>Shipping</span>
+          <span>{t("shipping")}</span>
           <strong>{numericShipping === null ? "—" : formatAmount(numericShipping, from)}</strong>
         </div>
         <div>
-          <span>Service / proxy fee</span>
+          <span>{t("serviceFee")}</span>
           <strong>{numericFee === null ? "—" : formatAmount(numericFee, from)}</strong>
         </div>
         <div className="cost-breakdown-total">
-          <span>Total before conversion</span>
+          <span>{t("totalBeforeConversion")}</span>
           <strong>{total === null ? "—" : formatAmount(total, from)}</strong>
         </div>
       </div>
@@ -259,7 +261,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
             step="0.01"
             value={shipping}
             onChange={(event) => setShipping(event.target.value)}
-            aria-label={`Shipping cost in ${from}`}
+            aria-label={`${t("shipping")} (${from})`}
           />
         </label>
 
@@ -271,7 +273,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
             step="0.01"
             value={serviceFee}
             onChange={(event) => setServiceFee(event.target.value)}
-            aria-label={`Service or proxy fee in ${from}`}
+            aria-label={`${t("serviceFee")} (${from})`}
           />
         </label>
       </div>
@@ -283,39 +285,39 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
       <div className="save-row">
         <input
           type="text"
-          placeholder="Label this item (optional)"
+          placeholder={t("itemLabel")}
           value={label}
           onChange={(event) => setLabel(event.target.value)}
           className="save-label-input"
-          aria-label="Item label (optional)"
+          aria-label={t("itemLabel")}
         />
         <button
           className="save-button"
           onClick={handleSave}
           disabled={!canSave}
-          aria-label="Save to basket"
+          aria-label={t("saveToBasket")}
         >
           <Plus size={16} />
-          Save to basket
+          {t("saveToBasket")}
         </button>
         <button
           className="share-button"
           onClick={() => void handleShare()}
-          aria-label="Copy shareable calculation link"
+          aria-label={t("shareLink")}
         >
           {shareStatus === "copied" ? <Check size={16} /> : <Copy size={16} />}
-          {shareStatus === "copied" ? "Copied" : "Share link"}
+          {shareStatus === "copied" ? t("copied") : t("shareLink")}
         </button>
       </div>
 
       {shareStatus === "ready" && (
         <div className="muted-note share-note" role="status">
-          Share link is ready in the address bar. Copy it to share this calculation.
+          {t("shareReady")}
         </div>
       )}
 
       <div className="muted-note">
-        Rates are reference rates from Frankfurter. Final card/bank conversion may differ.
+        {t("referenceRateNote")}
       </div>
     </section>
   );
