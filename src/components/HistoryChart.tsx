@@ -25,6 +25,17 @@ export function HistoryChart({ rows, quote, loading }: HistoryChartProps) {
   }).join(" ");
 
   const latestRate = rows.at(-1)?.rate;
+  const firstDate = rows[0]?.date;
+  const lastDate = rows.at(-1)?.date;
+
+  function formatMonth(date: string | undefined): string {
+    if (!date) return "—";
+
+    const parsed = new Date(date);
+    return Number.isNaN(parsed.getTime())
+      ? date
+      : parsed.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  }
 
   return (
     <section className="panel" aria-label="Historical exchange rates">
@@ -55,6 +66,18 @@ export function HistoryChart({ rows, quote, loading }: HistoryChartProps) {
           >
             <line x1={paddingX} y1={paddingY} x2={paddingX} y2={height - paddingY} className="axis" />
             <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} className="axis" />
+            <text x={paddingX} y={paddingY - 8} className="chart-label">
+              {max.toLocaleString("en-US", { maximumFractionDigits: 4 })}
+            </text>
+            <text x={paddingX} y={height - paddingY - 8} className="chart-label">
+              {min.toLocaleString("en-US", { maximumFractionDigits: 4 })}
+            </text>
+            <text x={paddingX} y={height - 7} className="chart-date-label">
+              {formatMonth(firstDate)}
+            </text>
+            <text x={width - paddingX} y={height - 7} textAnchor="end" className="chart-date-label">
+              {formatMonth(lastDate)}
+            </text>
             <polyline points={points} fill="none" className="chart-line" />
             {rows.map((row, index) => {
               const x = paddingX + (index / Math.max(rows.length - 1, 1)) * (width - paddingX * 2);
