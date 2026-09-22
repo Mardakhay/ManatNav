@@ -11,6 +11,7 @@ import {
   type LatestRateRow,
   type SupportedCurrency,
 } from "../types/currency";
+import { readLatestRatesCache, writeLatestRatesCache } from "../services/rateCache";
 
 const DEFAULT_QUOTES = SUPPORTED_CURRENCIES.filter((currency) => currency !== "AZN");
 
@@ -25,6 +26,8 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
   const [error, setError] = useState<string | null>(null);
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [ratesStale, setRatesStale] = useState(false);
+  const [ratesCachedAt, setRatesCachedAt] = useState<string | null>(null);
 
   const latestControllerRef = useRef<AbortController | null>(null);
   const historyControllerRef = useRef<AbortController | null>(null);
@@ -42,10 +45,22 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
       if (controller.signal.aborted || latestControllerRef.current !== controller) return;
       setRates(rows);
       setLastUpdated(rows[0]?.date ?? null);
+      setRatesStale(false);
+      setRatesCachedAt(null);
+      writeLatestRatesCache(rows);
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
       if (latestControllerRef.current !== controller) return;
-      setError(caught instanceof Error ? caught.message : "Unable to load rates.");
+      const cached = readLatestRatesCache();
+      if (cached) {
+        setRates(cached.rows);
+        setLastUpdated(cached.rows[0]?.date ?? cached.savedAt);
+        setRatesStale(true);
+        setRatesCachedAt(cached.savedAt);
+        setError("Live exchange rates are temporarily unavailable.");
+      } else {
+        setError(caught instanceof Error ? caught.message : "Unable to load rates.");
+      }
     } finally {
       if (latestControllerRef.current === controller) {
         latestControllerRef.current = null;
@@ -107,6 +122,8 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
     error,
     historyError,
     lastUpdated,
+    ratesStale,
+    ratesCachedAt,
     refresh: loadLatest,
     currencyMeta: CURRENCIES[baseCurrency],
   };

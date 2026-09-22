@@ -1110,6 +1110,22 @@ select:focus-visible {
   }
 }
 
+.stale-banner {
+  margin: -8px 0 18px;
+  padding: 11px 14px;
+  border: 1px solid #e4d9b7;
+  border-radius: 12px;
+  background: #fffaf0;
+  color: #79663d;
+  font-size: 12px;
+}
+
+:root[data-theme="dark"] .stale-banner {
+  border-color: #655b3a;
+  background: #2b281b;
+  color: #d8c990;
+}
+
 @media (max-width: 430px) {
   .rates-grid {
     grid-template-columns: 1fr;

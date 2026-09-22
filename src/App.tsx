@@ -13,6 +13,7 @@ import type { SupportedCurrency } from "./types/currency";
 import { CURRENCIES } from "./types/currency";
 import { useLanguage } from "./contexts/LanguageContext";
 import { CustomsGuide } from "./components/CustomsGuide";
+import { formatDate } from "./i18n/format";
 
 type Theme = "light" | "dark";
 
@@ -21,7 +22,7 @@ function isTheme(value: unknown): value is Theme {
 }
 
 function App() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [baseCurrency] = useState<SupportedCurrency>("AZN");
   const dashboard = useCurrencyDashboard(baseCurrency);
   const [theme, setTheme] = useLocalStorage<Theme>("manatnav:theme", "light", isTheme);
@@ -102,6 +103,12 @@ function App() {
         {dashboard.error && (
           <div className="error-banner" role="alert">
             {dashboard.error} {t("updatedCheckConnection")}
+          </div>
+        )}
+
+        {dashboard.ratesStale && dashboard.ratesCachedAt && (
+          <div className="stale-banner" role="status">
+            {t("cachedRates", { value: formatDate(dashboard.ratesCachedAt, language) })}
           </div>
         )}
 
