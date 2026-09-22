@@ -12,6 +12,7 @@ import { BASKET_STORAGE_KEY, isBasketItem } from "./types/basket";
 import type { SupportedCurrency } from "./types/currency";
 import { CURRENCIES } from "./types/currency";
 import { useLanguage } from "./contexts/LanguageContext";
+import { CustomsGuide } from "./components/CustomsGuide";
 
 type Theme = "light" | "dark";
 
@@ -159,6 +160,8 @@ function App() {
           range={dashboard.historyRange}
           onRangeChange={dashboard.setHistoryRange}
         />
+
+        <CustomsGuide />
 
         {dashboard.historyError && (
           <div className="muted-note history-note" role="alert">

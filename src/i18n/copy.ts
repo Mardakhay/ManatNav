@@ -75,6 +75,18 @@ const ENGLISH = {
   noRateData: "No rate data available right now.",
   updatedCheckConnection: "Check your connection and try again.",
   footerRates: "Reference rates from Frankfurter · Not financial advice",
+  customsEyebrow: "OFFICIAL REFERENCE",
+  customsTitle: "Azerbaijan customs basics",
+  customsDescription: "Use this reference when estimating an international order. Customs rules can change; confirm your case with the State Customs Committee.",
+  customsPostalLimit: "Postal / courier reference",
+  customsPostalLimitText: "The official guidance describes goods addressed to the same individual through international mail or a carrier with a monthly customs value up to 300 USD as eligible for preferential treatment.",
+  customsDeclaration: "Electronic declaration",
+  customsDeclarationText: "International e-commerce shipments can be declared through the State Customs Committee's Simplified Declaration — E-Commerce service.",
+  customsSupport: "Need confirmation?",
+  customsSupportText: "Contact the State Customs Committee through its official website or 195 call center.",
+  customsOfficialSource: "Official source",
+  customsDeclarationLink: "Open declaration service",
+  customsDisclaimer: "This is general reference information, not a customs or legal decision. Product type, quantity, origin, and declared value may affect the applicable procedure.",
 } as const;
 
 const AZERBAIJANI: Record<keyof typeof ENGLISH, string> = {
@@ -149,6 +161,18 @@ const AZERBAIJANI: Record<keyof typeof ENGLISH, string> = {
   noRateData: "Hazırda məzənnə məlumatı yoxdur.",
   updatedCheckConnection: "İnternet bağlantınızı yoxlayın və yenidən cəhd edin.",
   footerRates: "Frankfurter istinad məzənnələri · Maliyyə məsləhəti deyil",
+  customsEyebrow: "RƏSMİ MƏLUMAT",
+  customsTitle: "Azərbaycan gömrüyü üzrə əsas məlumat",
+  customsDescription: "Beynəlxalq sifarişi hesablayarkən bu məlumatdan istifadə edin. Gömrük qaydaları dəyişə bilər; konkret vəziyyətinizi Dövlət Gömrük Komitəsi ilə dəqiqləşdirin.",
+  customsPostalLimit: "Poçt / daşıyıcı üzrə istinad",
+  customsPostalLimitText: "Rəsmi məlumatda beynəlxalq poçt və ya daşıyıcı vasitəsilə eyni şəxsin adına ay ərzində gömrük dəyəri 300 ABŞ dollarına qədər olan malların güzəştli qaydada gətirilə biləcəyi bildirilir.",
+  customsDeclaration: "Elektron bəyannamə",
+  customsDeclarationText: "Beynəlxalq elektron ticarət göndərişlərini Dövlət Gömrük Komitəsinin Elektron ticarət — sadələşdirilmiş bəyannamə xidməti ilə bəyan etmək mümkündür.",
+  customsSupport: "Dəqiqləşdirmə lazımdır?",
+  customsSupportText: "Dövlət Gömrük Komitəsinin rəsmi saytı və ya 195 qaynar xətti ilə əlaqə saxlayın.",
+  customsOfficialSource: "Rəsmi mənbə",
+  customsDeclarationLink: "Bəyannamə xidmətini aç",
+  customsDisclaimer: "Bu, ümumi məlumatdır və gömrük və ya hüquqi qərar deyil. Məhsulun növü, sayı, mənşəyi və bəyan edilən dəyəri tətbiq olunan prosedura təsir edə bilər.",
 };
 
 const COPY: Record<Language, Record<keyof typeof ENGLISH, string>> = {

@@ -904,6 +904,53 @@ select:focus-visible {
   font-size: 15px;
 }
 
+.customs-panel {
+  margin-top: 18px;
+}
+
+.customs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.customs-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #e1e7de;
+  border-radius: 13px;
+  background: #f9faf8;
+}
+
+.customs-card-label {
+  color: #2d4432;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.customs-card p {
+  flex: 1;
+  margin: 8px 0 12px;
+  color: #747e75;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.customs-card a {
+  color: #557057;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.customs-disclaimer {
+  margin-top: 14px;
+}
+
 .chart-wrap {
   margin-top: 12px;
   background: #f9faf8;
@@ -1017,6 +1064,10 @@ select:focus-visible {
   .section-title-row {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .customs-grid {
+    grid-template-columns: 1fr;
   }
 
   .hero {
@@ -1193,6 +1244,20 @@ select:focus-visible {
 
 :root[data-theme="dark"] .history-stat strong {
   color: #d8e8d3;
+}
+
+:root[data-theme="dark"] .customs-card {
+  border-color: #334334;
+  background: #151d15;
+}
+
+:root[data-theme="dark"] .customs-card-label,
+:root[data-theme="dark"] .customs-card a {
+  color: #d8e8d3;
+}
+
+:root[data-theme="dark"] .customs-card p {
+  color: #aab8a8;
 }
 
 :root[data-theme="dark"] .cost-breakdown strong,
