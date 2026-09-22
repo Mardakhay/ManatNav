@@ -996,16 +996,24 @@ select:focus-visible {
   stroke-width: 1;
 }
 
+.grid-line {
+  stroke: #edf0eb;
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+}
+
 .chart-label,
 .chart-date-label {
   fill: #8a928b;
   font-size: 10px;
   font-weight: 600;
+  dominant-baseline: middle;
 }
 
 .chart-date-label {
   font-size: 11px;
   font-weight: 500;
+  dominant-baseline: auto;
 }
 
 .chart-line {
@@ -1344,6 +1352,10 @@ select:focus-visible {
 
 :root[data-theme="dark"] .chart-dot {
   fill: #151d15;
+}
+
+:root[data-theme="dark"] .grid-line {
+  stroke: #2b392c;
 }
 
 :root[data-theme="dark"] .footer {

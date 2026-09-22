@@ -17,8 +17,12 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
   const { language, t } = useLanguage();
   const width = 760;
   const height = 280;
-  const paddingX = 28;
-  const paddingY = 24;
+  const paddingLeft = 64;
+  const paddingRight = 22;
+  const paddingTop = 28;
+  const paddingBottom = 38;
+  const plotWidth = width - paddingLeft - paddingRight;
+  const plotHeight = height - paddingTop - paddingBottom;
 
   const values = rows.map((row) => row.rate);
   const min = values.length ? Math.min(...values) : 0;
@@ -26,8 +30,8 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
   const span = max - min || 1;
 
   const points = rows.map((row, index) => {
-    const x = paddingX + (index / Math.max(rows.length - 1, 1)) * (width - paddingX * 2);
-    const y = height - paddingY - ((row.rate - min) / span) * (height - paddingY * 2);
+    const x = paddingLeft + (index / Math.max(rows.length - 1, 1)) * plotWidth;
+    const y = paddingTop + (1 - (row.rate - min) / span) * plotHeight;
     return `${x},${y}`;
   }).join(" ");
 
@@ -109,24 +113,26 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
             role="img"
             aria-label={`Historical AZN to ${quote} rate chart, latest value ${latestRate === undefined ? "unavailable" : formatNumber(latestRate, language, { maximumFractionDigits: 4 })}`}
           >
-            <line x1={paddingX} y1={paddingY} x2={paddingX} y2={height - paddingY} className="axis" />
-            <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} className="axis" />
-            <text x={paddingX} y={paddingY - 8} className="chart-label">
+            <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={height - paddingBottom} className="axis" />
+            <line x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} className="axis" />
+            <line x1={paddingLeft} y1={paddingTop} x2={width - paddingRight} y2={paddingTop} className="grid-line" />
+            <line x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} className="grid-line" />
+            <text x={paddingLeft - 10} y={paddingTop + 4} textAnchor="end" className="chart-label">
               {formatNumber(max, language, { maximumFractionDigits: 4 })}
             </text>
-            <text x={paddingX} y={height - paddingY - 8} className="chart-label">
+            <text x={paddingLeft - 10} y={height - paddingBottom + 4} textAnchor="end" className="chart-label">
               {formatNumber(min, language, { maximumFractionDigits: 4 })}
             </text>
-            <text x={paddingX} y={height - 7} className="chart-date-label">
+            <text x={paddingLeft} y={height - 10} className="chart-date-label">
               {formatMonth(firstDate)}
             </text>
-            <text x={width - paddingX} y={height - 7} textAnchor="end" className="chart-date-label">
+            <text x={width - paddingRight} y={height - 10} textAnchor="end" className="chart-date-label">
               {formatMonth(lastDate)}
             </text>
             <polyline points={points} fill="none" className="chart-line" />
             {rows.map((row, index) => {
-              const x = paddingX + (index / Math.max(rows.length - 1, 1)) * (width - paddingX * 2);
-              const y = height - paddingY - ((row.rate - min) / span) * (height - paddingY * 2);
+              const x = paddingLeft + (index / Math.max(rows.length - 1, 1)) * plotWidth;
+              const y = paddingTop + (1 - (row.rate - min) / span) * plotHeight;
               return (
                 <circle
                   key={row.date}
