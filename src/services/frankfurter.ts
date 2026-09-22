@@ -65,7 +65,7 @@ export async function fetchTimeSeries(
   return parseRateRows(await getJson(url.toString(), signal));
 }
 
-function parseRateRows(payload: unknown): Array<LatestRateRow | HistoricalRateRow> {
+export function parseRateRows(payload: unknown): Array<LatestRateRow | HistoricalRateRow> {
   if (!Array.isArray(payload)) {
     throw new Error("Frankfurter returned an unexpected response.");
   }
