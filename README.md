@@ -17,6 +17,7 @@ AZN-focused currency dashboard built with React + TypeScript + Vite.
 - Light/dark theme with persistent preference
 - Official Azerbaijan customs reference links without invented duty calculations
 - Loading, error, and refresh states
+- Last-known latest and historical rates with explicit stale-data messaging
 - Responsive layout for desktop, tablet, and mobile
 - Runtime validation for exchange-rate and saved-basket data
 - Deterministic conversion, sharing, localization, history, API, and data-validation tests
@@ -47,6 +48,6 @@ Then open the local Vite URL shown in the terminal.
 
 ## Next milestones
 
-1. Add optional historical-rate caching with explicit freshness labels.
-2. Add sourced retailer metadata without inventing retailer policies.
-3. Explore installable offline/PWA behavior after further product validation.
+1. Add sourced retailer metadata without inventing retailer policies.
+2. Explore installable offline/PWA behavior after further product validation.
+3. Add richer automated visual regression checks as the UI grows.

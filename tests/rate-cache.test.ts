@@ -1,7 +1,10 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
+  readHistoricalRatesCache,
   readLatestRatesCache,
+  validateCachedHistoricalRates,
   validateCachedLatestRates,
+  writeHistoricalRatesCache,
   writeLatestRatesCache,
 } from "../src/services/rateCache";
 
@@ -40,5 +43,25 @@ describe("latest-rate cache validation", () => {
     writeLatestRatesCache([validRow]);
 
     expect(readLatestRatesCache()?.rows).toEqual([validRow]);
+  });
+
+  it("validates historical cache payloads", () => {
+    expect(validateCachedHistoricalRates({ rows: [validRow], savedAt: "2026-09-22T10:00:00.000Z" })).toBe(true);
+    expect(validateCachedHistoricalRates({ rows: [], savedAt: "2026-09-22T10:00:00.000Z" })).toBe(false);
+  });
+
+  it("round-trips a historical series by currency and range", () => {
+    const storage = new Map<string, string>();
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      value: {
+        getItem: (key: string) => storage.get(key) ?? null,
+        setItem: (key: string, value: string) => storage.set(key, value),
+      },
+    });
+
+    writeHistoricalRatesCache("AZN", "USD", 3, [validRow]);
+
+    expect(readHistoricalRatesCache("AZN", "USD", 3)?.rows).toEqual([validRow]);
   });
 });

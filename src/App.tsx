@@ -196,6 +196,12 @@ function App() {
           </div>
         )}
 
+        {dashboard.historyStale && dashboard.historyCachedAt && (
+          <div className="stale-banner history-note" role="status">
+            {t("cachedHistory", { value: formatDate(dashboard.historyCachedAt, language) })}
+          </div>
+        )}
+
         <footer className="footer">
           <span>ManatNav — {CURRENCIES[baseCurrency].name} dashboard</span>
           <span>{t("footerRates")}</span>

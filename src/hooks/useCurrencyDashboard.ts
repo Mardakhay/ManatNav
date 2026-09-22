@@ -11,7 +11,12 @@ import {
   type LatestRateRow,
   type SupportedCurrency,
 } from "../types/currency";
-import { readLatestRatesCache, writeLatestRatesCache } from "../services/rateCache";
+import {
+  readHistoricalRatesCache,
+  readLatestRatesCache,
+  writeHistoricalRatesCache,
+  writeLatestRatesCache,
+} from "../services/rateCache";
 
 const DEFAULT_QUOTES = SUPPORTED_CURRENCIES.filter((currency) => currency !== "AZN");
 
@@ -28,6 +33,8 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [ratesStale, setRatesStale] = useState(false);
   const [ratesCachedAt, setRatesCachedAt] = useState<string | null>(null);
+  const [historyStale, setHistoryStale] = useState(false);
+  const [historyCachedAt, setHistoryCachedAt] = useState<string | null>(null);
 
   const latestControllerRef = useRef<AbortController | null>(null);
   const historyControllerRef = useRef<AbortController | null>(null);
@@ -86,12 +93,23 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
       );
       if (controller.signal.aborted || historyControllerRef.current !== controller) return;
       setHistory(rows);
+      setHistoryStale(false);
+      setHistoryCachedAt(null);
+      writeHistoricalRatesCache(baseCurrency, selectedHistoryQuote, historyRange, rows);
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
       if (historyControllerRef.current !== controller) return;
-      setHistoryError(
-        caught instanceof Error ? caught.message : "Unable to load historical data."
-      );
+      const cached = readHistoricalRatesCache(baseCurrency, selectedHistoryQuote, historyRange);
+      if (cached) {
+        setHistory(cached.rows);
+        setHistoryStale(true);
+        setHistoryCachedAt(cached.savedAt);
+        setHistoryError("Live historical data is temporarily unavailable.");
+      } else {
+        setHistoryError(
+          caught instanceof Error ? caught.message : "Unable to load historical data."
+        );
+      }
     } finally {
       if (historyControllerRef.current === controller) {
         historyControllerRef.current = null;
@@ -124,6 +142,8 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
     lastUpdated,
     ratesStale,
     ratesCachedAt,
+    historyStale,
+    historyCachedAt,
     refresh: loadLatest,
     currencyMeta: CURRENCIES[baseCurrency],
   };
