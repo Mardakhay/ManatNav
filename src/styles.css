@@ -28,6 +28,13 @@ button {
   cursor: pointer;
 }
 
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(91, 119, 84, 0.35);
+  outline-offset: 2px;
+}
+
 .app-shell {
   min-height: 100vh;
 }
@@ -88,11 +95,36 @@ button {
 }
 
 .hero {
+  position: relative;
+  overflow: hidden;
   display: flex;
   justify-content: space-between;
   align-items: end;
   gap: 24px;
-  padding: 28px 0 44px;
+  margin-bottom: 34px;
+  padding: 38px 36px 40px;
+  border: 1px solid #dde6d9;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(238, 244, 235, 0.88));
+  box-shadow: 0 18px 45px rgba(43, 55, 45, 0.06);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: -100px;
+  top: -130px;
+  border-radius: 50%;
+  background: rgba(211, 231, 196, 0.42);
+  pointer-events: none;
+}
+
+.hero > div,
+.hero > button {
+  position: relative;
+  z-index: 1;
 }
 
 .hero h1 {
@@ -256,6 +288,7 @@ button {
   background: rgba(255,255,255,0.9);
   border-radius: 22px;
   padding: 22px;
+  box-shadow: 0 12px 32px rgba(43, 55, 45, 0.035);
 }
 
 .accent-panel {
@@ -445,10 +478,11 @@ button {
   gap: 10px;
   margin-top: 14px;
   align-items: stretch;
+  flex-wrap: wrap;
 }
 
 .save-label-input {
-  flex: 1;
+  flex: 1 1 180px;
   height: 45px;
   border: 1px solid #d8dfd5;
   background: #ffffff;
@@ -756,6 +790,12 @@ button {
     flex-direction: column;
   }
 
+  .hero {
+    margin-bottom: 26px;
+    padding: 28px 22px 30px;
+    border-radius: 22px;
+  }
+
   .rates-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -775,6 +815,12 @@ button {
 
   .save-row {
     flex-direction: column;
+  }
+
+  .save-label-input,
+  .save-button,
+  .share-button {
+    width: 100%;
   }
 }
 
