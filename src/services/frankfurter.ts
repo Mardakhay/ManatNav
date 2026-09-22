@@ -1,15 +1,24 @@
-import type { HistoricalRateRow, LatestRateRow, SupportedCurrency } from "../types/currency";
+import {
+  SUPPORTED_CURRENCIES,
+  type HistoricalRateRow,
+  type LatestRateRow,
+  type SupportedCurrency,
+} from "../types/currency";
 
 const API_URL = "https://api.frankfurter.dev/v2";
 
-async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
+async function getJson(url: string, signal?: AbortSignal): Promise<unknown> {
   const response = await fetch(url, { signal });
 
   if (!response.ok) {
     throw new Error(`Frankfurter request failed (${response.status}).`);
   }
 
-  return response.json() as Promise<T>;
+  try {
+    return await response.json();
+  } catch {
+    throw new Error("Frankfurter returned an invalid response.");
+  }
 }
 
 export async function fetchLatestRates(
@@ -24,7 +33,13 @@ export async function fetchLatestRates(
   url.searchParams.set("base", base);
   url.searchParams.set("quotes", filteredQuotes.join(","));
 
-  return getJson<LatestRateRow[]>(url.toString(), signal);
+  const rows = parseRateRows(await getJson(url.toString(), signal));
+
+  if (rows.length === 0) {
+    throw new Error("No current rates were returned.");
+  }
+
+  return rows;
 }
 
 export async function fetchTimeSeries(
@@ -43,7 +58,31 @@ export async function fetchTimeSeries(
   url.searchParams.set("to", toISODate(today));
   url.searchParams.set("group", "month");
 
-  return getJson<HistoricalRateRow[]>(url.toString(), signal);
+  return parseRateRows(await getJson(url.toString(), signal));
+}
+
+function parseRateRows(payload: unknown): Array<LatestRateRow | HistoricalRateRow> {
+  if (!Array.isArray(payload)) {
+    throw new Error("Frankfurter returned an unexpected response.");
+  }
+
+  return payload.filter(isRateRow);
+}
+
+function isRateRow(row: unknown): row is LatestRateRow | HistoricalRateRow {
+  if (!row || typeof row !== "object") return false;
+
+  const candidate = row as Record<string, unknown>;
+  return (
+    typeof candidate.date === "string" &&
+    typeof candidate.base === "string" &&
+    typeof candidate.quote === "string" &&
+    SUPPORTED_CURRENCIES.includes(candidate.base as SupportedCurrency) &&
+    SUPPORTED_CURRENCIES.includes(candidate.quote as SupportedCurrency) &&
+    typeof candidate.rate === "number" &&
+    Number.isFinite(candidate.rate) &&
+    candidate.rate > 0
+  );
 }
 
 function toISODate(date: Date): string {
