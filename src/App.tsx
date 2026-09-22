@@ -60,6 +60,11 @@ function App() {
     setBasket((prev) => prev.filter((item) => item.id !== id));
   }
 
+  function removeManyFromBasket(ids: string[]) {
+    const selected = new Set(ids);
+    setBasket((prev) => prev.filter((item) => !selected.has(item.id)));
+  }
+
   function duplicateBasketItem(item: BasketItem) {
     setBasket((prev) => [
       ...prev,
@@ -167,6 +172,7 @@ function App() {
           <Basket
             items={basket}
             onRemove={removeFromBasket}
+            onRemoveMany={removeManyFromBasket}
             onEdit={editBasketItem}
             onDuplicate={duplicateBasketItem}
             onClear={resetBasket}

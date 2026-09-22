@@ -47,6 +47,6 @@ Then open the local Vite URL shown in the terminal.
 
 ## Next milestones
 
-1. Add a clearly labeled last-known-rate cache for temporary network outages.
-2. Add basket export and bulk-management options while preserving localStorage.
-3. Add automated browser accessibility checks to the validation workflow.
+1. Add optional historical-rate caching with explicit freshness labels.
+2. Add sourced retailer metadata without inventing retailer policies.
+3. Explore installable offline/PWA behavior after further product validation.

@@ -1,4 +1,5 @@
 import { Copy, Download, Package, Pencil, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
 import type { BasketItem } from "../types/basket";
 import { CURRENCIES } from "../types/currency";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -7,15 +8,40 @@ import { formatNumber } from "../i18n/format";
 interface BasketProps {
   items: BasketItem[];
   onRemove: (id: string) => void;
+  onRemoveMany: (ids: string[]) => void;
   onEdit: (item: BasketItem) => void;
   onDuplicate: (item: BasketItem) => void;
   onClear: () => void;
   onExport: () => void;
 }
 
-export function Basket({ items, onRemove, onEdit, onDuplicate, onClear, onExport }: BasketProps) {
+export function Basket({ items, onRemove, onRemoveMany, onEdit, onDuplicate, onClear, onExport }: BasketProps) {
   const { language, t } = useLanguage();
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const total = items.reduce((sum, item) => sum + item.convertedAmount, 0);
+  const selectedCount = useMemo(
+    () => items.filter((item) => selectedIds.has(item.id)).length,
+    [items, selectedIds]
+  );
+  const allSelected = items.length > 0 && selectedCount === items.length;
+
+  function toggleSelected(id: string) {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleAll() {
+    setSelectedIds(allSelected ? new Set() : new Set(items.map((item) => item.id)));
+  }
+
+  function removeSelected() {
+    onRemoveMany(Array.from(selectedIds));
+    setSelectedIds(new Set());
+  }
 
   return (
     <section className="panel accent-panel basket-panel" aria-label={t("basketTitle")}>
@@ -34,6 +60,27 @@ export function Basket({ items, onRemove, onEdit, onDuplicate, onClear, onExport
         {items.length} {items.length === 1 ? t("savedItem") : t("savedItems")}
       </div>
 
+      {items.length > 0 && (
+        <div className="basket-bulk-toolbar">
+          <label className="basket-select-all">
+            <input type="checkbox" checked={allSelected} onChange={toggleAll} />
+            {t("selectAll")}
+          </label>
+          {selectedCount > 0 && (
+            <>
+              <span className="basket-selected-count">{t("selectedCount", { value: selectedCount })}</span>
+              <button className="basket-text-button" onClick={() => setSelectedIds(new Set())}>
+                {t("clearSelection")}
+              </button>
+              <button className="basket-remove-selected" onClick={removeSelected}>
+                <Trash2 size={14} />
+                {t("removeSelected")}
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
       {items.length === 0 ? (
         <div className="basket-empty">
           {t("noItems")}
@@ -43,6 +90,14 @@ export function Basket({ items, onRemove, onEdit, onDuplicate, onClear, onExport
           <ul className="basket-list">
             {items.map((item) => (
               <li key={item.id} className="basket-item">
+                <label className="basket-item-select">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(item.id)}
+                    onChange={() => toggleSelected(item.id)}
+                    aria-label={t("selectItem", { value: item.label })}
+                  />
+                </label>
                 <div className="basket-item-info">
                   <strong>{item.label}</strong>
                   <span className="basket-item-detail">{t("product")}: {formatBasketAmount(item.amount, item.currency, language)}</span>

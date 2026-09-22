@@ -713,6 +713,66 @@ select:focus-visible {
   color: #7e877e;
 }
 
+.basket-bulk-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 12px;
+  color: #6e796f;
+  font-size: 12px;
+}
+
+.basket-select-all,
+.basket-item-select {
+  display: inline-flex;
+  align-items: center;
+}
+
+.basket-select-all {
+  gap: 6px;
+  font-weight: 700;
+}
+
+.basket-item-select {
+  align-self: flex-start;
+  padding-top: 2px;
+}
+
+.basket-selected-count {
+  color: #557057;
+  font-weight: 700;
+}
+
+.basket-text-button,
+.basket-remove-selected {
+  border: 0;
+  background: transparent;
+  color: #557057;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.basket-text-button {
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.basket-remove-selected {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border: 1px solid #e0d8d4;
+  border-radius: 8px;
+  color: #a85c4a;
+}
+
+.basket-remove-selected:hover {
+  background: #fff7f4;
+}
+
 .basket-item-total {
   margin-top: 3px;
   color: #4f5f51;
@@ -1293,6 +1353,16 @@ select:focus-visible {
 
 :root[data-theme="dark"] .history-stat strong {
   color: #d8e8d3;
+}
+
+:root[data-theme="dark"] .basket-selected-count,
+:root[data-theme="dark"] .basket-text-button {
+  color: #d8e8d3;
+}
+
+:root[data-theme="dark"] .basket-remove-selected {
+  border-color: #4b3934;
+  color: #e4a28c;
 }
 
 :root[data-theme="dark"] .customs-card {
