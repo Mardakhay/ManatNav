@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchLatestRates, fetchTimeSeries } from "../services/frankfurter";
+import {
+  fetchLatestRates,
+  fetchTimeSeries,
+  type HistoryRange,
+} from "../services/frankfurter";
 import {
   CURRENCIES,
   SUPPORTED_CURRENCIES,
@@ -15,6 +19,7 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
   const [history, setHistory] = useState<HistoricalRateRow[]>([]);
   const [selectedHistoryQuote, setSelectedHistoryQuote] =
     useState<SupportedCurrency>("USD");
+  const [historyRange, setHistoryRange] = useState<HistoryRange>(12);
   const [loading, setLoading] = useState(true);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +66,7 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
       const rows = await fetchTimeSeries(
         baseCurrency,
         selectedHistoryQuote,
+        historyRange,
         controller.signal
       );
       if (controller.signal.aborted || historyControllerRef.current !== controller) return;
@@ -77,7 +83,7 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
         if (!controller.signal.aborted) setHistoryLoading(false);
       }
     }
-  }, [baseCurrency, selectedHistoryQuote]);
+  }, [baseCurrency, historyRange, selectedHistoryQuote]);
 
   useEffect(() => {
     void loadLatest();
@@ -94,6 +100,8 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
     history,
     selectedHistoryQuote,
     setSelectedHistoryQuote,
+    historyRange,
+    setHistoryRange,
     loading,
     historyLoading,
     error,

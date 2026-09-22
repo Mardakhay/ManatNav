@@ -5,6 +5,9 @@ import {
   type SupportedCurrency,
 } from "../types/currency";
 
+export const HISTORY_RANGES = [3, 6, 12] as const;
+export type HistoryRange = (typeof HISTORY_RANGES)[number];
+
 const API_URL = "https://api.frankfurter.dev/v2";
 
 async function getJson(url: string, signal?: AbortSignal): Promise<unknown> {
@@ -45,11 +48,12 @@ export async function fetchLatestRates(
 export async function fetchTimeSeries(
   base: SupportedCurrency,
   quote: SupportedCurrency,
+  months: HistoryRange = 12,
   signal?: AbortSignal
 ): Promise<HistoricalRateRow[]> {
   const today = new Date();
   const from = new Date(today);
-  from.setFullYear(today.getFullYear() - 1);
+  from.setMonth(today.getMonth() - months);
 
   const url = new URL(`${API_URL}/rates`);
   url.searchParams.set("base", base);
