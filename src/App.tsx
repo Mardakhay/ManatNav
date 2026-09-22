@@ -52,6 +52,7 @@ function App() {
             className="refresh-button"
             onClick={() => void dashboard.refresh()}
             disabled={dashboard.loading}
+            aria-label="Refresh exchange rates"
           >
             <RefreshCw size={17} className={dashboard.loading ? "spin" : ""} />
             Refresh
@@ -59,7 +60,7 @@ function App() {
         </section>
 
         {dashboard.error && (
-          <div className="error-banner">
+          <div className="error-banner" role="alert">
             {dashboard.error} Check your connection and try again.
           </div>
         )}
@@ -76,21 +77,23 @@ function App() {
           <div className="rates-grid">
             {dashboard.loading
               ? ["USD", "EUR", "TRY", "RUB", "GBP"].map((code) => (
-                  <div className="rate-card skeleton-card" key={code} />
+                  <div className="rate-card skeleton-card" key={code} aria-hidden="true" />
                 ))
-              : dashboard.rates.map((row) => (
-                  <RateCard
-                    key={row.quote}
-                    currency={row.quote as SupportedCurrency}
-                    rate={row.rate}
-                    active={dashboard.selectedHistoryQuote === row.quote}
-                    onClick={() =>
-                      dashboard.setSelectedHistoryQuote(
-                        row.quote as SupportedCurrency
-                      )
-                    }
-                  />
-                ))}
+              : dashboard.rates.length === 0 && !dashboard.error
+                ? <div className="chart-state" style={{ gridColumn: "1 / -1" }}>No rate data available right now.</div>
+                : dashboard.rates.map((row) => (
+                    <RateCard
+                      key={row.quote}
+                      currency={row.quote as SupportedCurrency}
+                      rate={row.rate}
+                      active={dashboard.selectedHistoryQuote === row.quote}
+                      onClick={() =>
+                        dashboard.setSelectedHistoryQuote(
+                          row.quote as SupportedCurrency
+                        )
+                      }
+                    />
+                  ))}
           </div>
         </section>
 
@@ -106,7 +109,9 @@ function App() {
         />
 
         {dashboard.historyError && (
-          <div className="muted-note history-note">{dashboard.historyError}</div>
+          <div className="muted-note history-note" role="alert">
+            {dashboard.historyError}
+          </div>
         )}
 
         <footer className="footer">

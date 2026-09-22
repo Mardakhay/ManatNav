@@ -12,14 +12,14 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
   const total = items.reduce((sum, item) => sum + item.convertedAmount, 0);
 
   return (
-    <section className="panel accent-panel basket-panel">
+    <section className="panel accent-panel basket-panel" aria-label="Shopping basket">
       <div className="panel-heading">
         <div>
           <div className="eyebrow">SAVED BASKET</div>
           <h2>Your shopping basket</h2>
           <p>Saved calculations persist in your browser between visits.</p>
         </div>
-        <div className="panel-icon">
+        <div className="panel-icon" aria-hidden="true">
           <Package size={20} />
         </div>
       </div>
@@ -37,8 +37,8 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
                   <strong>{item.label}</strong>
                   <span className="basket-item-detail">
                     {item.amount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
-                    {CURRENCIES[item.currency].symbol}
-                    {item.shipping > 0 && ` + ${item.shipping.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${CURRENCIES[item.currency].symbol}`}
+                    {CURRENCIES[item.currency]?.symbol ?? ""}
+                    {item.shipping > 0 && ` + ${item.shipping.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${CURRENCIES[item.currency]?.symbol ?? ""}`}
                   </span>
                 </div>
                 <div className="basket-item-right">
@@ -65,7 +65,14 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
             </strong>
           </div>
 
-          <button className="clear-basket-button" onClick={onClear}>
+          <button
+            className="clear-basket-button"
+            onClick={() => {
+              if (window.confirm("Remove all items from your basket?")) {
+                onClear();
+              }
+            }}
+          >
             Clear basket
           </button>
         </>

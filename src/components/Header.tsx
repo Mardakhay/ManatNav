@@ -17,8 +17,8 @@ export function Header({ lastUpdated }: HeaderProps) {
         </div>
       </div>
 
-      <div className="status-pill">
-        <Activity size={15} />
+      <div className="status-pill" role="status">
+        <Activity size={15} aria-hidden="true" />
         <span>
           Updated {lastUpdated ? new Date(lastUpdated).toLocaleDateString("en-GB") : "—"}
         </span>

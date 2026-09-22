@@ -24,8 +24,10 @@ export function HistoryChart({ rows, quote, loading }: HistoryChartProps) {
     return `${x},${y}`;
   }).join(" ");
 
+  const latestRate = rows.at(-1)?.rate;
+
   return (
-    <section className="panel">
+    <section className="panel" aria-label="Historical exchange rates">
       <div className="panel-heading">
         <div>
           <div className="eyebrow">HISTORY</div>
@@ -34,16 +36,23 @@ export function HistoryChart({ rows, quote, loading }: HistoryChartProps) {
         </div>
 
         <div className="legend-value">
-          {rows.at(-1)?.rate?.toLocaleString("en-US", { maximumFractionDigits: 4 }) ?? "—"}
+          {latestRate !== undefined
+            ? latestRate.toLocaleString("en-US", { maximumFractionDigits: 4 })
+            : "—"}
           <small>{CURRENCIES[quote].symbol} / AZN</small>
         </div>
       </div>
 
       <div className="chart-wrap">
         {loading ? (
-          <div className="chart-state">Loading history…</div>
+          <div className="chart-state" role="status">Loading history…</div>
         ) : rows.length ? (
-          <svg viewBox={`0 0 ${width} ${height}`} className="chart" role="img" aria-label={`Historical AZN to ${quote} rate`}>
+          <svg
+            viewBox={`0 0 ${width} ${height}`}
+            className="chart"
+            role="img"
+            aria-label={`Historical AZN to ${quote} rate chart, latest value ${latestRate?.toLocaleString("en-US", { maximumFractionDigits: 4 }) ?? "unavailable"}`}
+          >
             <line x1={paddingX} y1={paddingY} x2={paddingX} y2={height - paddingY} className="axis" />
             <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} className="axis" />
             <polyline points={points} fill="none" className="chart-line" />

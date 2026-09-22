@@ -12,7 +12,12 @@ export function RateCard({ currency, rate, onClick, active }: RateCardProps) {
   const meta = CURRENCIES[currency];
 
   return (
-    <button className={`rate-card ${active ? "active" : ""}`} onClick={onClick}>
+    <button
+      className={`rate-card ${active ? "active" : ""}`}
+      onClick={onClick}
+      aria-pressed={active}
+      aria-label={`1 AZN equals ${rate.toLocaleString("en-US", { maximumFractionDigits: 4 })} ${meta.name}, select to view history`}
+    >
       <div className="rate-card-top">
         <span className="currency-code">{currency}</span>
         <span className="currency-symbol">{meta.symbol}</span>

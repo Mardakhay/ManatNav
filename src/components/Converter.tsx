@@ -1,4 +1,4 @@
-import { ArrowDownUp, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowDownUp, Plus, ShoppingBag } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { BasketItem } from "../types/basket";
 import type { RetailerPreset } from "../types/retailer";
@@ -9,6 +9,11 @@ import { CURRENCIES } from "../types/currency";
 interface ConverterProps {
   rates: Record<string, number>;
   onSaveToBasket: (item: BasketItem) => void;
+}
+
+function clampNumber(value: string): number {
+  const parsed = Number(value || 0);
+  return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
 }
 
 export function Converter({ rates, onSaveToBasket }: ConverterProps) {
@@ -33,22 +38,29 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
     return null;
   }, [from, to, rates]);
 
-  const numericAmount = Number(amount || 0);
-  const numericShipping = Number(shipping || 0);
-  const numericFee = Number(serviceFee || 0);
+  const numericAmount = clampNumber(amount);
+  const numericShipping = clampNumber(shipping);
+  const numericFee = clampNumber(serviceFee);
   const total = numericAmount + numericShipping + numericFee;
   const converted = directRate === null ? null : total * directRate;
 
-  // Apply retailer preset: set currency + reset shipping when retailer changes
+  const canSave =
+    converted !== null &&
+    numericAmount > 0 &&
+    directRate !== null;
+
+  // Apply retailer preset: set currency + shipping + label when retailer changes
   useEffect(() => {
     if (retailer.id !== DEFAULT_RETAILER_ID) {
       setFrom(retailer.defaultCurrency);
       setShipping(String(retailer.defaultShipping));
       setLabel(retailer.name);
+    } else {
+      setLabel("");
     }
   }, [retailer]);
 
-  // Reset shipping when currency changes (unless a retailer preset is active)
+  // Reset shipping when currency changes in Custom mode
   useEffect(() => {
     if (retailer.id === DEFAULT_RETAILER_ID) {
       setShipping("0");
@@ -60,7 +72,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
   }
 
   function handleSave() {
-    if (converted === null) return;
+    if (!canSave || converted === null || directRate === null) return;
     onSaveToBasket({
       id: crypto.randomUUID(),
       label: label.trim() || `${retailer.name} order`,
@@ -73,24 +85,25 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
   }
 
   return (
-    <section className="panel">
+    <section className="panel" aria-label="Currency converter">
       <div className="panel-heading">
         <div>
           <div className="eyebrow">SHOPPING TOOL</div>
           <h2>Convert before you buy</h2>
           <p>See what your overseas order costs in Azerbaijani manat.</p>
         </div>
-        <div className="panel-icon">
+        <div className="panel-icon" aria-hidden="true">
           <ShoppingBag size={20} />
         </div>
       </div>
 
-      <div className="retailer-presets">
+      <div className="retailer-presets" role="group" aria-label="Retailer presets">
         {RETAILERS.map((preset) => (
           <button
             key={preset.id}
             className={`retailer-chip ${retailerId === preset.id ? "active" : ""}`}
             onClick={() => applyPreset(preset)}
+            aria-pressed={retailerId === preset.id}
           >
             {preset.name}
           </button>
@@ -106,6 +119,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
             step="0.01"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
+            aria-label="Amount to convert"
           />
         </label>
 
@@ -120,7 +134,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
 
         <button
           className="swap-button"
-          aria-label="Swap currencies"
+          aria-label="Swap from and to currencies"
           onClick={() => {
             setFrom(to);
             setTo(from);
@@ -142,7 +156,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
           <span>Estimated result</span>
           <strong>
             {converted === null
-              ? "—"
+              ? "Rate unavailable"
               : `${converted.toLocaleString("en-US", {
                   maximumFractionDigits: 2,
                 })} ${CURRENCIES[to].symbol}`}
@@ -159,6 +173,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
             step="0.01"
             value={shipping}
             onChange={(event) => setShipping(event.target.value)}
+            aria-label={`Shipping cost in ${from}`}
           />
         </label>
 
@@ -170,6 +185,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
             step="0.01"
             value={serviceFee}
             onChange={(event) => setServiceFee(event.target.value)}
+            aria-label={`Service or proxy fee in ${from}`}
           />
         </label>
       </div>
@@ -185,11 +201,13 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
           value={label}
           onChange={(event) => setLabel(event.target.value)}
           className="save-label-input"
+          aria-label="Item label (optional)"
         />
         <button
           className="save-button"
           onClick={handleSave}
-          disabled={converted === null}
+          disabled={!canSave}
+          aria-label="Save to basket"
         >
           <Plus size={16} />
           Save to basket

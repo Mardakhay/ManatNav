@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchLatestRates, fetchTimeSeries } from "../services/frankfurter";
 import {
   CURRENCIES,
@@ -21,28 +21,34 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
+  const latestControllerRef = useRef<AbortController | null>(null);
+  const historyControllerRef = useRef<AbortController | null>(null);
+
   const loadLatest = useCallback(async () => {
+    latestControllerRef.current?.abort();
     const controller = new AbortController();
+    latestControllerRef.current = controller;
 
     try {
       setLoading(true);
       setError(null);
 
       const rows = await fetchLatestRates(baseCurrency, DEFAULT_QUOTES, controller.signal);
+      if (controller.signal.aborted) return;
       setRates(rows);
       setLastUpdated(rows[0]?.date ?? null);
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
       setError(caught instanceof Error ? caught.message : "Unable to load rates.");
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) setLoading(false);
     }
-
-    return () => controller.abort();
   }, [baseCurrency]);
 
   const loadHistory = useCallback(async () => {
+    historyControllerRef.current?.abort();
     const controller = new AbortController();
+    historyControllerRef.current = controller;
 
     try {
       setHistoryLoading(true);
@@ -53,6 +59,7 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
         selectedHistoryQuote,
         controller.signal
       );
+      if (controller.signal.aborted) return;
       setHistory(rows);
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
@@ -60,18 +67,18 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
         caught instanceof Error ? caught.message : "Unable to load historical data."
       );
     } finally {
-      setHistoryLoading(false);
+      if (!controller.signal.aborted) setHistoryLoading(false);
     }
-
-    return () => controller.abort();
   }, [baseCurrency, selectedHistoryQuote]);
 
   useEffect(() => {
     void loadLatest();
+    return () => latestControllerRef.current?.abort();
   }, [loadLatest]);
 
   useEffect(() => {
     void loadHistory();
+    return () => historyControllerRef.current?.abort();
   }, [loadHistory]);
 
   return {
