@@ -1,9 +1,13 @@
-import { ArrowDownUp, Plus, ShoppingBag } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowDownUp, Check, Copy, Plus, ShoppingBag } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { BasketItem } from "../types/basket";
 import type { RetailerPreset } from "../types/retailer";
 import { RETAILERS, DEFAULT_RETAILER_ID } from "../types/retailer";
 import { getConversionRate } from "../services/conversion";
+import {
+  buildCalculationShareUrl,
+  readCalculationFromUrl,
+} from "../services/share";
 import type { SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
 
@@ -24,13 +28,21 @@ function formatAmount(value: number, currency: SupportedCurrency): string {
 }
 
 export function Converter({ rates, onSaveToBasket }: ConverterProps) {
-  const [retailerId, setRetailerId] = useState(DEFAULT_RETAILER_ID);
-  const [from, setFrom] = useState<SupportedCurrency>("TRY");
-  const [to, setTo] = useState<SupportedCurrency>("AZN");
-  const [amount, setAmount] = useState("100");
-  const [shipping, setShipping] = useState("0");
-  const [serviceFee, setServiceFee] = useState("0");
-  const [label, setLabel] = useState("");
+  const sharedState = useMemo(() => readCalculationFromUrl(), []);
+  const initialRetailerId = sharedState?.retailerId ?? DEFAULT_RETAILER_ID;
+  const initialRetailer =
+    RETAILERS.find((preset) => preset.id === initialRetailerId) ?? RETAILERS[0];
+  const [retailerId, setRetailerId] = useState(initialRetailer.id);
+  const [from, setFrom] = useState<SupportedCurrency>(
+    sharedState?.from ?? initialRetailer.defaultCurrency
+  );
+  const [to, setTo] = useState<SupportedCurrency>(sharedState?.to ?? "AZN");
+  const [amount, setAmount] = useState(sharedState?.amount ?? "100");
+  const [shipping, setShipping] = useState(sharedState?.shipping ?? "0");
+  const [serviceFee, setServiceFee] = useState(sharedState?.serviceFee ?? "0");
+  const [label, setLabel] = useState(sharedState?.label ?? "");
+  const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "ready">("idle");
+  const initializedRetailerRef = useRef(false);
 
   const retailer = useMemo(
     () => RETAILERS.find((r) => r.id === retailerId) ?? RETAILERS[0],
@@ -57,11 +69,44 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
     directRate !== null;
 
   useEffect(() => {
+    if (!initializedRetailerRef.current) {
+      initializedRetailerRef.current = true;
+      return;
+    }
+
     setFrom(retailer.defaultCurrency);
     setShipping(String(retailer.defaultShipping));
     setServiceFee("0");
     setLabel(retailer.id === DEFAULT_RETAILER_ID ? "" : retailer.name);
   }, [retailer]);
+
+  async function handleShare() {
+    const shareUrl = buildCalculationShareUrl({
+      retailerId: retailer.id,
+      from,
+      to,
+      amount,
+      shipping,
+      serviceFee,
+      label,
+    });
+
+    if (!shareUrl) return;
+    window.history.replaceState(null, "", shareUrl);
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setShareStatus("copied");
+        return;
+      } catch {
+        setShareStatus("ready");
+        return;
+      }
+    }
+
+    setShareStatus("ready");
+  }
 
   function applyPreset(preset: RetailerPreset) {
     setRetailerId(preset.id);
@@ -237,7 +282,21 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
           <Plus size={16} />
           Save to basket
         </button>
+        <button
+          className="share-button"
+          onClick={() => void handleShare()}
+          aria-label="Copy shareable calculation link"
+        >
+          {shareStatus === "copied" ? <Check size={16} /> : <Copy size={16} />}
+          {shareStatus === "copied" ? "Copied" : "Share link"}
+        </button>
       </div>
+
+      {shareStatus === "ready" && (
+        <div className="muted-note share-note" role="status">
+          Share link is ready in the address bar. Copy it to share this calculation.
+        </div>
+      )}
 
       <div className="muted-note">
         Rates are reference rates from Frankfurter. Final card/bank conversion may differ.

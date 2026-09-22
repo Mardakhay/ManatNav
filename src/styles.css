@@ -489,6 +489,31 @@ button {
   cursor: default;
 }
 
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 14px;
+  height: 45px;
+  border: 1px solid #d8dfd4;
+  background: #ffffff;
+  color: #59645b;
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.share-button:hover {
+  border-color: #bcc8b9;
+  background: #f8faf7;
+}
+
+.share-note {
+  margin-top: 8px;
+}
+
 .basket-panel {
   display: flex;
   flex-direction: column;
