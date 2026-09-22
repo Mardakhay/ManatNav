@@ -2,6 +2,7 @@ import type { HistoricalRateRow, SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
 import { HISTORY_RANGES, type HistoryRange } from "../services/frankfurter";
 import { useLanguage } from "../contexts/LanguageContext";
+import { formatDate, formatNumber } from "../i18n/format";
 
 interface HistoryChartProps {
   rows: HistoricalRateRow[];
@@ -12,7 +13,7 @@ interface HistoryChartProps {
 }
 
 export function HistoryChart({ rows, quote, loading, range, onRangeChange }: HistoryChartProps) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const width = 760;
   const height = 280;
   const paddingX = 28;
@@ -39,7 +40,7 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
     const parsed = new Date(date);
     return Number.isNaN(parsed.getTime())
       ? date
-      : parsed.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+      : formatDate(parsed, language, { month: "short", year: "numeric" });
   }
 
   return (
@@ -53,7 +54,7 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
 
         <div className="legend-value">
           {latestRate !== undefined
-            ? latestRate.toLocaleString("en-US", { maximumFractionDigits: 4 })
+            ? formatNumber(latestRate, language, { maximumFractionDigits: 4 })
             : "—"}
           <small>{CURRENCIES[quote].symbol} / AZN</small>
         </div>
@@ -81,15 +82,15 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
             viewBox={`0 0 ${width} ${height}`}
             className="chart"
             role="img"
-            aria-label={`Historical AZN to ${quote} rate chart, latest value ${latestRate?.toLocaleString("en-US", { maximumFractionDigits: 4 }) ?? "unavailable"}`}
+            aria-label={`Historical AZN to ${quote} rate chart, latest value ${latestRate === undefined ? "unavailable" : formatNumber(latestRate, language, { maximumFractionDigits: 4 })}`}
           >
             <line x1={paddingX} y1={paddingY} x2={paddingX} y2={height - paddingY} className="axis" />
             <line x1={paddingX} y1={height - paddingY} x2={width - paddingX} y2={height - paddingY} className="axis" />
             <text x={paddingX} y={paddingY - 8} className="chart-label">
-              {max.toLocaleString("en-US", { maximumFractionDigits: 4 })}
+              {formatNumber(max, language, { maximumFractionDigits: 4 })}
             </text>
             <text x={paddingX} y={height - paddingY - 8} className="chart-label">
-              {min.toLocaleString("en-US", { maximumFractionDigits: 4 })}
+              {formatNumber(min, language, { maximumFractionDigits: 4 })}
             </text>
             <text x={paddingX} y={height - 7} className="chart-date-label">
               {formatMonth(firstDate)}
@@ -109,10 +110,10 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
                   r="3.8"
                   className="chart-dot"
                   tabIndex={0}
-                  aria-label={`${formatMonth(row.date)}: ${row.rate.toLocaleString("en-US", { maximumFractionDigits: 4 })} ${CURRENCIES[quote].symbol} per AZN`}
+                  aria-label={`${formatMonth(row.date)}: ${formatNumber(row.rate, language, { maximumFractionDigits: 4 })} ${CURRENCIES[quote].symbol} per AZN`}
                 >
                   <title>
-                    {formatMonth(row.date)}: {row.rate.toLocaleString("en-US", { maximumFractionDigits: 4 })} {CURRENCIES[quote].symbol} per AZN
+                    {formatMonth(row.date)}: {formatNumber(row.rate, language, { maximumFractionDigits: 4 })} {CURRENCIES[quote].symbol} per AZN
                   </title>
                 </circle>
               );

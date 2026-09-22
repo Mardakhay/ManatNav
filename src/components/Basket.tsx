@@ -2,6 +2,7 @@ import { Copy, Package, Trash2 } from "lucide-react";
 import type { BasketItem } from "../types/basket";
 import { CURRENCIES } from "../types/currency";
 import { useLanguage } from "../contexts/LanguageContext";
+import { formatNumber } from "../i18n/format";
 
 interface BasketProps {
   items: BasketItem[];
@@ -11,7 +12,7 @@ interface BasketProps {
 }
 
 export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const total = items.reduce((sum, item) => sum + item.convertedAmount, 0);
 
   return (
@@ -42,23 +43,24 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
               <li key={item.id} className="basket-item">
                 <div className="basket-item-info">
                   <strong>{item.label}</strong>
-                  <span className="basket-item-detail">{t("product")}: {formatBasketAmount(item.amount, item.currency)}</span>
+                  <span className="basket-item-detail">{t("product")}: {formatBasketAmount(item.amount, item.currency, language)}</span>
                   {item.shipping > 0 && (
-                    <span className="basket-item-detail">{t("shipping")}: {formatBasketAmount(item.shipping, item.currency)}</span>
+                    <span className="basket-item-detail">{t("shipping")}: {formatBasketAmount(item.shipping, item.currency, language)}</span>
                   )}
                   {item.serviceFee !== undefined && item.serviceFee > 0 && (
-                    <span className="basket-item-detail">{t("serviceFee")}: {formatBasketAmount(item.serviceFee, item.currency)}</span>
+                    <span className="basket-item-detail">{t("serviceFee")}: {formatBasketAmount(item.serviceFee, item.currency, language)}</span>
                   )}
                   <span className="basket-item-total">
                     {t("orderTotal")}: {formatBasketAmount(
                       item.amount + item.shipping + (item.serviceFee ?? 0),
-                      item.currency
+                      item.currency,
+                      language
                     )}
                   </span>
                 </div>
                 <div className="basket-item-right">
                   <strong>
-                    {item.convertedAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
+                    {formatNumber(item.convertedAmount, language, { maximumFractionDigits: 2 })}{" "}
                     ₼
                   </strong>
                   <div className="basket-actions">
@@ -85,7 +87,7 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
           <div className="basket-total" aria-live="polite">
             <span>{t("totalEstimatedCost")}</span>
             <strong>
-              {total.toLocaleString("en-US", { maximumFractionDigits: 2 })} ₼
+              {formatNumber(total, language, { maximumFractionDigits: 2 })} ₼
             </strong>
           </div>
 
@@ -105,6 +107,10 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
   );
 }
 
-function formatBasketAmount(amount: number, currency: BasketItem["currency"]): string {
-  return `${amount.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${CURRENCIES[currency]?.symbol ?? currency}`;
+function formatBasketAmount(
+  amount: number,
+  currency: BasketItem["currency"],
+  language: "en" | "az"
+): string {
+  return `${formatNumber(amount, language, { maximumFractionDigits: 2 })} ${CURRENCIES[currency]?.symbol ?? currency}`;
 }

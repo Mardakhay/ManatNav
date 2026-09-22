@@ -1,5 +1,6 @@
 import { Activity, CircleDollarSign, Moon, Sun } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
+import { formatDate } from "../i18n/format";
 
 interface HeaderProps {
   lastUpdated: string | null;
@@ -26,7 +27,7 @@ export function Header({ lastUpdated, theme, onToggleTheme }: HeaderProps) {
         <div className="status-pill" role="status">
           <Activity size={15} aria-hidden="true" />
           <span>
-            {t("updated", { value: lastUpdated ? new Date(lastUpdated).toLocaleDateString(language === "az" ? "az-AZ" : "en-GB") : "—" })}
+            {t("updated", { value: lastUpdated ? formatDate(lastUpdated, language) : "—" })}
           </span>
         </div>
         <button

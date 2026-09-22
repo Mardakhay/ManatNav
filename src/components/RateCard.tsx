@@ -1,6 +1,7 @@
 import type { SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
 import { useLanguage } from "../contexts/LanguageContext";
+import { formatNumber } from "../i18n/format";
 
 interface RateCardProps {
   currency: SupportedCurrency;
@@ -11,8 +12,8 @@ interface RateCardProps {
 
 export function RateCard({ currency, rate, onClick, active }: RateCardProps) {
   const meta = CURRENCIES[currency];
-  const { t } = useLanguage();
-  const formattedRate = rate.toLocaleString("en-US", { maximumFractionDigits: 4 });
+  const { language, t } = useLanguage();
+  const formattedRate = formatNumber(rate, language, { maximumFractionDigits: 4 });
 
   return (
     <button

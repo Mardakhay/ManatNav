@@ -11,6 +11,7 @@ import {
 import type { SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
 import { useLanguage } from "../contexts/LanguageContext";
+import { formatNumber } from "../i18n/format";
 
 interface ConverterProps {
   rates: Record<string, number>;
@@ -26,12 +27,12 @@ function parseNonNegativeNumber(value: string): number | null {
 
 const QUICK_AMOUNTS = [25, 50, 100, 250] as const;
 
-function formatAmount(value: number, currency: SupportedCurrency): string {
-  return `${value.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${CURRENCIES[currency].symbol}`;
+function formatAmount(value: number, currency: SupportedCurrency, language: "en" | "az"): string {
+  return `${formatNumber(value, language, { maximumFractionDigits: 2 })} ${CURRENCIES[currency].symbol}`;
 }
 
 export function Converter({ rates, onSaveToBasket }: ConverterProps) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const sharedState = useMemo(() => readCalculationFromUrl(), []);
   const initialRetailerId = sharedState?.retailerId ?? DEFAULT_RETAILER_ID;
   const initialRetailer =
@@ -52,6 +53,12 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
     () => RETAILERS.find((r) => r.id === retailerId) ?? RETAILERS[0],
     [retailerId]
   );
+  const retailerNoteKey = {
+    custom: "customShippingNote",
+    trendyol: "trendyolShippingNote",
+    amazon: "amazonShippingNote",
+    aliexpress: "aliexpressShippingNote",
+  }[retailer.id] as "customShippingNote" | "trendyolShippingNote" | "amazonShippingNote" | "aliexpressShippingNote";
 
   const directRate = useMemo(() => {
     return getConversionRate(from, to, rates);
@@ -226,7 +233,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
               ? total === null
                 ? t("enterValidAmounts")
                 : t("rateUnavailable")
-              : `${converted.toLocaleString("en-US", {
+              : `${formatNumber(converted, language, {
                   maximumFractionDigits: 2,
                 })} ${CURRENCIES[to].symbol}`}
           </strong>
@@ -236,19 +243,19 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
       <div className="cost-breakdown" aria-label={t("costBreakdown")}>
         <div>
           <span>{t("product")}</span>
-          <strong>{numericAmount === null ? "—" : formatAmount(numericAmount, from)}</strong>
+          <strong>{numericAmount === null ? "—" : formatAmount(numericAmount, from, language)}</strong>
         </div>
         <div>
           <span>{t("shipping")}</span>
-          <strong>{numericShipping === null ? "—" : formatAmount(numericShipping, from)}</strong>
+          <strong>{numericShipping === null ? "—" : formatAmount(numericShipping, from, language)}</strong>
         </div>
         <div>
           <span>{t("serviceFee")}</span>
-          <strong>{numericFee === null ? "—" : formatAmount(numericFee, from)}</strong>
+          <strong>{numericFee === null ? "—" : formatAmount(numericFee, from, language)}</strong>
         </div>
         <div className="cost-breakdown-total">
           <span>{t("totalBeforeConversion")}</span>
-          <strong>{total === null ? "—" : formatAmount(total, from)}</strong>
+          <strong>{total === null ? "—" : formatAmount(total, from, language)}</strong>
         </div>
       </div>
 
@@ -279,7 +286,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
       </div>
 
       {retailer.shippingNote && retailer.id !== DEFAULT_RETAILER_ID && (
-        <div className="muted-note retailer-note">{retailer.shippingNote}</div>
+        <div className="muted-note retailer-note">{t(retailerNoteKey)}</div>
       )}
 
       <div className="save-row">
