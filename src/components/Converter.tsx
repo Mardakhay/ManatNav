@@ -48,7 +48,7 @@ export function Converter({ rates, onSaveToBasket, editingItem, onCancelEdit }: 
   const [shipping, setShipping] = useState(sharedState?.shipping ?? "0");
   const [serviceFee, setServiceFee] = useState(sharedState?.serviceFee ?? "0");
   const [label, setLabel] = useState(sharedState?.label ?? "");
-  const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "ready">("idle");
+  const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "shared" | "ready">("idle");
   const initializedRetailerRef = useRef(false);
 
   const retailer = useMemo(
@@ -118,6 +118,20 @@ export function Converter({ rates, onSaveToBasket, editingItem, onCancelEdit }: 
 
     if (!shareUrl) return;
     window.history.replaceState(null, "", shareUrl);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "ManatNav",
+          text: label.trim() || t("converterTitle"),
+          url: shareUrl,
+        });
+        setShareStatus("shared");
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
 
     if (navigator.clipboard?.writeText) {
       try {
@@ -326,8 +340,8 @@ export function Converter({ rates, onSaveToBasket, editingItem, onCancelEdit }: 
           onClick={() => void handleShare()}
           aria-label={t("shareLink")}
         >
-          {shareStatus === "copied" ? <Check size={16} /> : <Copy size={16} />}
-          {shareStatus === "copied" ? t("copied") : t("shareLink")}
+          {shareStatus === "copied" || shareStatus === "shared" ? <Check size={16} /> : <Copy size={16} />}
+          {shareStatus === "copied" ? t("copied") : shareStatus === "shared" ? t("shared") : t("shareLink")}
         </button>
         {editingItem && (
           <button className="cancel-edit-button" onClick={onCancelEdit}>
