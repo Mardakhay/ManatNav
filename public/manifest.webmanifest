@@ -1,0 +1,20 @@
+{
+  "name": "ManatNav — AZN Smart Dashboard",
+  "short_name": "ManatNav",
+  "description": "An AZN-focused currency and international shopping dashboard.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f7f3",
+  "theme_color": "#f6f7f3",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

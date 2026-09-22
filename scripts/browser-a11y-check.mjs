@@ -36,6 +36,15 @@ async function waitForServer() {
   throw new Error("Timed out waiting for the Vite server.");
 }
 
+async function checkManifest() {
+  const response = await fetch(url + "manifest.webmanifest");
+  if (!response.ok) throw new Error("The PWA manifest is not reachable.");
+  const manifest = await response.json();
+  if (manifest.name !== "ManatNav — AZN Smart Dashboard" || manifest.display !== "standalone") {
+    throw new Error("The PWA manifest is missing required install metadata.");
+  }
+}
+
 const serverArgs = ["run", "dev", "--", "--host", "127.0.0.1", "--port", port];
 const server = isWindows
   ? spawn(process.env.ComSpec ?? "cmd.exe", ["/d", "/s", "/c", npmCommand + " " + serverArgs.join(" ")], {
@@ -46,6 +55,7 @@ const server = isWindows
 
 try {
   await waitForServer();
+  await checkManifest();
   await run(npxCommand, ["--yes", "agent-browser", "open", url]);
   await run(npxCommand, ["--yes", "agent-browser", "wait", "--load", "networkidle"]);
   const snapshot = await run(npxCommand, ["--yes", "agent-browser", "snapshot", "-i"]);
