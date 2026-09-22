@@ -34,14 +34,18 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
       setError(null);
 
       const rows = await fetchLatestRates(baseCurrency, DEFAULT_QUOTES, controller.signal);
-      if (controller.signal.aborted) return;
+      if (controller.signal.aborted || latestControllerRef.current !== controller) return;
       setRates(rows);
       setLastUpdated(rows[0]?.date ?? null);
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
+      if (latestControllerRef.current !== controller) return;
       setError(caught instanceof Error ? caught.message : "Unable to load rates.");
     } finally {
-      if (!controller.signal.aborted) setLoading(false);
+      if (latestControllerRef.current === controller) {
+        latestControllerRef.current = null;
+        if (!controller.signal.aborted) setLoading(false);
+      }
     }
   }, [baseCurrency]);
 
@@ -59,15 +63,19 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
         selectedHistoryQuote,
         controller.signal
       );
-      if (controller.signal.aborted) return;
+      if (controller.signal.aborted || historyControllerRef.current !== controller) return;
       setHistory(rows);
     } catch (caught) {
       if (caught instanceof DOMException && caught.name === "AbortError") return;
+      if (historyControllerRef.current !== controller) return;
       setHistoryError(
         caught instanceof Error ? caught.message : "Unable to load historical data."
       );
     } finally {
-      if (!controller.signal.aborted) setHistoryLoading(false);
+      if (historyControllerRef.current === controller) {
+        historyControllerRef.current = null;
+        if (!controller.signal.aborted) setHistoryLoading(false);
+      }
     }
   }, [baseCurrency, selectedHistoryQuote]);
 
