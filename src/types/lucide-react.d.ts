@@ -11,6 +11,7 @@ declare module "lucide-react" {
   export const Check: ComponentType<LucideProps>;
   export const CircleDollarSign: ComponentType<LucideProps>;
   export const Copy: ComponentType<LucideProps>;
+  export const Pencil: ComponentType<LucideProps>;
   export const Moon: ComponentType<LucideProps>;
   export const Package: ComponentType<LucideProps>;
   export const Plus: ComponentType<LucideProps>;

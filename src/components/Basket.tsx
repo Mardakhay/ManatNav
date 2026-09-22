@@ -1,4 +1,4 @@
-import { Copy, Package, Trash2 } from "lucide-react";
+import { Copy, Package, Pencil, Trash2 } from "lucide-react";
 import type { BasketItem } from "../types/basket";
 import { CURRENCIES } from "../types/currency";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -7,11 +7,12 @@ import { formatNumber } from "../i18n/format";
 interface BasketProps {
   items: BasketItem[];
   onRemove: (id: string) => void;
+  onEdit: (item: BasketItem) => void;
   onDuplicate: (item: BasketItem) => void;
   onClear: () => void;
 }
 
-export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
+export function Basket({ items, onRemove, onEdit, onDuplicate, onClear }: BasketProps) {
   const { language, t } = useLanguage();
   const total = items.reduce((sum, item) => sum + item.convertedAmount, 0);
 
@@ -64,6 +65,13 @@ export function Basket({ items, onRemove, onDuplicate, onClear }: BasketProps) {
                     ₼
                   </strong>
                   <div className="basket-actions">
+                    <button
+                      className="icon-button edit-button"
+                      aria-label={t("edit", { value: item.label })}
+                      onClick={() => onEdit(item)}
+                    >
+                      <Pencil size={15} />
+                    </button>
                     <button
                       className="icon-button duplicate-button"
                       aria-label={t("duplicate", { value: item.label })}

@@ -15,7 +15,9 @@ import { formatNumber } from "../i18n/format";
 
 interface ConverterProps {
   rates: Record<string, number>;
-  onSaveToBasket: (item: BasketItem) => void;
+  onSaveToBasket: (item: BasketItem, replacingId?: string) => void;
+  editingItem: BasketItem | null;
+  onCancelEdit: () => void;
 }
 
 function parseNonNegativeNumber(value: string): number | null {
@@ -31,7 +33,7 @@ function formatAmount(value: number, currency: SupportedCurrency, language: "en"
   return `${formatNumber(value, language, { maximumFractionDigits: 2 })} ${CURRENCIES[currency].symbol}`;
 }
 
-export function Converter({ rates, onSaveToBasket }: ConverterProps) {
+export function Converter({ rates, onSaveToBasket, editingItem, onCancelEdit }: ConverterProps) {
   const { language, t } = useLanguage();
   const sharedState = useMemo(() => readCalculationFromUrl(), []);
   const initialRetailerId = sharedState?.retailerId ?? DEFAULT_RETAILER_ID;
@@ -91,6 +93,18 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
     setLabel(retailer.id === DEFAULT_RETAILER_ID ? "" : retailer.name);
   }, [retailer]);
 
+  useEffect(() => {
+    if (!editingItem) return;
+
+    setRetailerId(DEFAULT_RETAILER_ID);
+    setFrom(editingItem.currency);
+    setTo("AZN");
+    setAmount(String(editingItem.amount));
+    setShipping(String(editingItem.shipping));
+    setServiceFee(String(editingItem.serviceFee ?? 0));
+    setLabel(editingItem.label);
+  }, [editingItem]);
+
   async function handleShare() {
     const shareUrl = buildCalculationShareUrl({
       retailerId: retailer.id,
@@ -133,15 +147,15 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
       numericFee === null
     ) return;
     onSaveToBasket({
-      id: crypto.randomUUID(),
+      id: editingItem?.id ?? crypto.randomUUID(),
       label: label.trim() || `${retailer.name} order`,
       amount: numericAmount,
       currency: from,
       shipping: numericShipping,
       serviceFee: numericFee,
       convertedAmount: converted,
-      createdAt: Date.now(),
-    });
+      createdAt: editingItem?.createdAt ?? Date.now(),
+    }, editingItem?.id);
   }
 
   return (
@@ -302,10 +316,10 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
           className="save-button"
           onClick={handleSave}
           disabled={!canSave}
-          aria-label={t("saveToBasket")}
+          aria-label={editingItem ? t("updateBasket") : t("saveToBasket")}
         >
           <Plus size={16} />
-          {t("saveToBasket")}
+          {editingItem ? t("updateBasket") : t("saveToBasket")}
         </button>
         <button
           className="share-button"
@@ -315,7 +329,18 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
           {shareStatus === "copied" ? <Check size={16} /> : <Copy size={16} />}
           {shareStatus === "copied" ? t("copied") : t("shareLink")}
         </button>
+        {editingItem && (
+          <button className="cancel-edit-button" onClick={onCancelEdit}>
+            {t("cancelEdit")}
+          </button>
+        )}
       </div>
+
+      {editingItem && (
+        <div className="muted-note editing-note" role="status">
+          {t("editingItem")}: {editingItem.label}
+        </div>
+      )}
 
       {shareStatus === "ready" && (
         <div className="muted-note share-note" role="status">

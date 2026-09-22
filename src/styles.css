@@ -625,6 +625,26 @@ select:focus-visible {
   background: #f8faf7;
 }
 
+.cancel-edit-button {
+  padding: 0 14px;
+  height: 45px;
+  border: 1px solid #d8dfd4;
+  background: transparent;
+  color: #59645b;
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cancel-edit-button:hover {
+  border-color: #bcc8b9;
+  background: #f8faf7;
+}
+
+.editing-note {
+  margin-top: 8px;
+}
+
 .share-note {
   margin-top: 8px;
 }
@@ -738,6 +758,16 @@ select:focus-visible {
   border-color: #d8e3d4;
   background: #f4f8f1;
   color: #557057;
+}
+
+.edit-button {
+  border-color: #d8e3d4;
+  background: #f4f8f1;
+  color: #557057;
+}
+
+.edit-button:hover {
+  background: #eaf2e6;
 }
 
 .duplicate-button:hover {
@@ -994,7 +1024,8 @@ select:focus-visible {
 
   .save-label-input,
   .save-button,
-  .share-button {
+  .share-button,
+  .cancel-edit-button {
     width: 100%;
   }
 }
@@ -1090,6 +1121,7 @@ select:focus-visible {
 :root[data-theme="dark"] .quick-amount,
 :root[data-theme="dark"] .save-label-input,
 :root[data-theme="dark"] .share-button,
+:root[data-theme="dark"] .cancel-edit-button,
 :root[data-theme="dark"] .converter-grid input,
 :root[data-theme="dark"] .converter-grid select,
 :root[data-theme="dark"] .shipping-grid input {

@@ -30,6 +30,7 @@ function App() {
     (value): value is BasketItem[] =>
       Array.isArray(value) && value.every(isBasketItem)
   );
+  const [editingItem, setEditingItem] = useState<BasketItem | null>(null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -43,8 +44,13 @@ function App() {
     [dashboard.rates]
   );
 
-  function addToBasket(item: BasketItem) {
-    setBasket((prev) => [...prev, item]);
+  function saveBasketItem(item: BasketItem, replacingId?: string) {
+    setBasket((prev) =>
+      replacingId
+        ? prev.map((savedItem) => savedItem.id === replacingId ? item : savedItem)
+        : [...prev, item]
+    );
+    setEditingItem(null);
   }
 
   function removeFromBasket(id: string) {
@@ -56,6 +62,11 @@ function App() {
       ...prev,
       { ...item, id: crypto.randomUUID(), createdAt: Date.now() },
     ]);
+  }
+
+  function editBasketItem(item: BasketItem) {
+    setEditingItem(item);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
@@ -126,10 +137,16 @@ function App() {
         </section>
 
         <section className="two-column">
-          <Converter rates={ratesMap} onSaveToBasket={addToBasket} />
+          <Converter
+            rates={ratesMap}
+            onSaveToBasket={saveBasketItem}
+            editingItem={editingItem}
+            onCancelEdit={() => setEditingItem(null)}
+          />
           <Basket
             items={basket}
             onRemove={removeFromBasket}
+            onEdit={editBasketItem}
             onDuplicate={duplicateBasketItem}
             onClear={resetBasket}
           />
