@@ -59,23 +59,12 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
     numericAmount > 0 &&
     directRate !== null;
 
-  // Apply retailer preset: set currency + shipping + label when retailer changes
   useEffect(() => {
-    if (retailer.id !== DEFAULT_RETAILER_ID) {
-      setFrom(retailer.defaultCurrency);
-      setShipping(String(retailer.defaultShipping));
-      setLabel(retailer.name);
-    } else {
-      setLabel("");
-    }
+    setFrom(retailer.defaultCurrency);
+    setShipping(String(retailer.defaultShipping));
+    setServiceFee("0");
+    setLabel(retailer.id === DEFAULT_RETAILER_ID ? "" : retailer.name);
   }, [retailer]);
-
-  // Reset shipping when currency changes in Custom mode
-  useEffect(() => {
-    if (retailer.id === DEFAULT_RETAILER_ID) {
-      setShipping("0");
-    }
-  }, [from, retailer.id]);
 
   function applyPreset(preset: RetailerPreset) {
     setRetailerId(preset.id);
