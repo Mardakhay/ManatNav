@@ -23,6 +23,8 @@ function parseNonNegativeNumber(value: string): number | null {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 }
 
+const QUICK_AMOUNTS = [25, 50, 100, 250] as const;
+
 function formatAmount(value: number, currency: SupportedCurrency): string {
   return `${value.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${CURRENCIES[currency].symbol}`;
 }
@@ -155,6 +157,20 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
             aria-pressed={retailerId === preset.id}
           >
             {preset.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="quick-amounts" role="group" aria-label="Quick amount presets">
+        <span className="quick-amounts-label">Quick amount</span>
+        {QUICK_AMOUNTS.map((quickAmount) => (
+          <button
+            key={quickAmount}
+            className={`quick-amount ${amount === String(quickAmount) ? "active" : ""}`}
+            onClick={() => setAmount(String(quickAmount))}
+            aria-pressed={amount === String(quickAmount)}
+          >
+            {quickAmount}
           </button>
         ))}
       </div>
