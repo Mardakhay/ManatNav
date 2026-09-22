@@ -346,6 +346,36 @@ button {
   letter-spacing: -0.035em;
 }
 
+.cost-breakdown {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid #e1e7de;
+  background: #f9faf8;
+  border-radius: 13px;
+}
+
+.cost-breakdown > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #747e75;
+  font-size: 12px;
+}
+
+.cost-breakdown strong {
+  color: #273429;
+  font-weight: 700;
+}
+
+.cost-breakdown-total {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid #e1e7de;
+  color: #273429 !important;
+}
+
 .shipping-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

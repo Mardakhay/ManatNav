@@ -11,9 +11,15 @@ interface ConverterProps {
   onSaveToBasket: (item: BasketItem) => void;
 }
 
-function clampNumber(value: string): number {
-  const parsed = Number(value || 0);
-  return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+function parseNonNegativeNumber(value: string): number | null {
+  if (value.trim() === "") return null;
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function formatAmount(value: number, currency: SupportedCurrency): string {
+  return `${value.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${CURRENCIES[currency].symbol}`;
 }
 
 export function Converter({ rates, onSaveToBasket }: ConverterProps) {
@@ -38,14 +44,18 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
     return null;
   }, [from, to, rates]);
 
-  const numericAmount = clampNumber(amount);
-  const numericShipping = clampNumber(shipping);
-  const numericFee = clampNumber(serviceFee);
-  const total = numericAmount + numericShipping + numericFee;
-  const converted = directRate === null ? null : total * directRate;
+  const numericAmount = parseNonNegativeNumber(amount);
+  const numericShipping = parseNonNegativeNumber(shipping);
+  const numericFee = parseNonNegativeNumber(serviceFee);
+  const total =
+    numericAmount !== null && numericShipping !== null && numericFee !== null
+      ? numericAmount + numericShipping + numericFee
+      : null;
+  const converted = directRate === null || total === null ? null : total * directRate;
 
   const canSave =
     converted !== null &&
+    numericAmount !== null &&
     numericAmount > 0 &&
     directRate !== null;
 
@@ -72,13 +82,21 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
   }
 
   function handleSave() {
-    if (!canSave || converted === null || directRate === null) return;
+    if (
+      !canSave ||
+      converted === null ||
+      directRate === null ||
+      numericAmount === null ||
+      numericShipping === null ||
+      numericFee === null
+    ) return;
     onSaveToBasket({
       id: crypto.randomUUID(),
       label: label.trim() || `${retailer.name} order`,
       amount: numericAmount,
       currency: from,
-      shipping: numericShipping + numericFee,
+      shipping: numericShipping,
+      serviceFee: numericFee,
       convertedAmount: converted,
       createdAt: Date.now(),
     });
@@ -156,11 +174,32 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
           <span>Estimated result</span>
           <strong>
             {converted === null
-              ? "Rate unavailable"
+              ? total === null
+                ? "Enter valid amounts"
+                : "Rate unavailable"
               : `${converted.toLocaleString("en-US", {
                   maximumFractionDigits: 2,
                 })} ${CURRENCIES[to].symbol}`}
           </strong>
+        </div>
+      </div>
+
+      <div className="cost-breakdown" aria-label="Shopping cost breakdown">
+        <div>
+          <span>Product</span>
+          <strong>{numericAmount === null ? "—" : formatAmount(numericAmount, from)}</strong>
+        </div>
+        <div>
+          <span>Shipping</span>
+          <strong>{numericShipping === null ? "—" : formatAmount(numericShipping, from)}</strong>
+        </div>
+        <div>
+          <span>Service / proxy fee</span>
+          <strong>{numericFee === null ? "—" : formatAmount(numericFee, from)}</strong>
+        </div>
+        <div className="cost-breakdown-total">
+          <span>Total before conversion</span>
+          <strong>{total === null ? "—" : formatAmount(total, from)}</strong>
         </div>
       </div>
 

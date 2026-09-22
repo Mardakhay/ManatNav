@@ -8,14 +8,19 @@ import { RateCard } from "./components/RateCard";
 import { useCurrencyDashboard } from "./hooks/useCurrencyDashboard";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import type { BasketItem } from "./types/basket";
-import { BASKET_STORAGE_KEY } from "./types/basket";
+import { BASKET_STORAGE_KEY, isBasketItem } from "./types/basket";
 import type { SupportedCurrency } from "./types/currency";
 import { CURRENCIES } from "./types/currency";
 
 function App() {
   const [baseCurrency] = useState<SupportedCurrency>("AZN");
   const dashboard = useCurrencyDashboard(baseCurrency);
-  const [basket, setBasket, resetBasket] = useLocalStorage<BasketItem[]>(BASKET_STORAGE_KEY, []);
+  const [basket, setBasket, resetBasket] = useLocalStorage<BasketItem[]>(
+    BASKET_STORAGE_KEY,
+    [],
+    (value): value is BasketItem[] =>
+      Array.isArray(value) && value.every(isBasketItem)
+  );
 
   const ratesMap = useMemo(
     () =>

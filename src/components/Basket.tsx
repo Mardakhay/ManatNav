@@ -35,11 +35,13 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
               <li key={item.id} className="basket-item">
                 <div className="basket-item-info">
                   <strong>{item.label}</strong>
-                  <span className="basket-item-detail">
-                    {item.amount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
-                    {CURRENCIES[item.currency]?.symbol ?? ""}
-                    {item.shipping > 0 && ` + ${item.shipping.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${CURRENCIES[item.currency]?.symbol ?? ""}`}
-                  </span>
+                  <span className="basket-item-detail">Product: {formatBasketAmount(item.amount, item.currency)}</span>
+                  {item.shipping > 0 && (
+                    <span className="basket-item-detail">Shipping: {formatBasketAmount(item.shipping, item.currency)}</span>
+                  )}
+                  {item.serviceFee !== undefined && item.serviceFee > 0 && (
+                    <span className="basket-item-detail">Service fee: {formatBasketAmount(item.serviceFee, item.currency)}</span>
+                  )}
                 </div>
                 <div className="basket-item-right">
                   <strong>
@@ -79,4 +81,8 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
       )}
     </section>
   );
+}
+
+function formatBasketAmount(amount: number, currency: BasketItem["currency"]): string {
+  return `${amount.toLocaleString("en-US", { maximumFractionDigits: 2 })} ${CURRENCIES[currency]?.symbol ?? currency}`;
 }

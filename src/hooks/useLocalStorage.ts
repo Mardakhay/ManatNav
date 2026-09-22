@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 
-export function useLocalStorage<T>(key: string, initialValue: T) {
+export function useLocalStorage<T>(
+  key: string,
+  initialValue: T,
+  validate?: (value: unknown) => value is T
+) {
   const [value, setValue] = useState<T>(() => {
     try {
       const stored = localStorage.getItem(key);
       if (!stored) return initialValue;
-      const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) ? (parsed as T) : initialValue;
+      const parsed: unknown = JSON.parse(stored);
+      return validate && !validate(parsed) ? initialValue : (parsed as T);
     } catch {
       return initialValue;
     }
