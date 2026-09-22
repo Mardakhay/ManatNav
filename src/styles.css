@@ -804,6 +804,14 @@ select:focus-visible {
   fill: #f9faf8;
   stroke: #304735;
   stroke-width: 3;
+  outline: none;
+  transition: r 160ms ease, fill 160ms ease;
+}
+
+.chart-dot:hover,
+.chart-dot:focus {
+  r: 5.5;
+  fill: #d3e7c4;
 }
 
 .chart-state {

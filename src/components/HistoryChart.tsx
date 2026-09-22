@@ -82,7 +82,21 @@ export function HistoryChart({ rows, quote, loading }: HistoryChartProps) {
             {rows.map((row, index) => {
               const x = paddingX + (index / Math.max(rows.length - 1, 1)) * (width - paddingX * 2);
               const y = height - paddingY - ((row.rate - min) / span) * (height - paddingY * 2);
-              return <circle key={row.date} cx={x} cy={y} r="3.8" className="chart-dot" />;
+              return (
+                <circle
+                  key={row.date}
+                  cx={x}
+                  cy={y}
+                  r="3.8"
+                  className="chart-dot"
+                  tabIndex={0}
+                  aria-label={`${formatMonth(row.date)}: ${row.rate.toLocaleString("en-US", { maximumFractionDigits: 4 })} ${CURRENCIES[quote].symbol} per AZN`}
+                >
+                  <title>
+                    {formatMonth(row.date)}: {row.rate.toLocaleString("en-US", { maximumFractionDigits: 4 })} {CURRENCIES[quote].symbol} per AZN
+                  </title>
+                </circle>
+              );
             })}
           </svg>
         ) : (
