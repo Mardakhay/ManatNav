@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { BasketItem } from "../types/basket";
 import type { RetailerPreset } from "../types/retailer";
 import { RETAILERS, DEFAULT_RETAILER_ID } from "../types/retailer";
+import { getConversionRate } from "../services/conversion";
 import type { SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
 
@@ -37,11 +38,7 @@ export function Converter({ rates, onSaveToBasket }: ConverterProps) {
   );
 
   const directRate = useMemo(() => {
-    if (from === to) return 1;
-    if (from === "AZN" && rates[to]) return rates[to];
-    if (to === "AZN" && rates[from]) return 1 / rates[from];
-    if (rates[from] && rates[to]) return (1 / rates[from]) * rates[to];
-    return null;
+    return getConversionRate(from, to, rates);
   }, [from, to, rates]);
 
   const numericAmount = parseNonNegativeNumber(amount);
