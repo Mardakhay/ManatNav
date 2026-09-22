@@ -3,6 +3,7 @@ import { CURRENCIES } from "../types/currency";
 import { HISTORY_RANGES, type HistoryRange } from "../services/frankfurter";
 import { useLanguage } from "../contexts/LanguageContext";
 import { formatDate, formatNumber } from "../i18n/format";
+import { summarizeHistory } from "../services/history";
 
 interface HistoryChartProps {
   rows: HistoricalRateRow[];
@@ -33,6 +34,11 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
   const latestRate = rows.at(-1)?.rate;
   const firstDate = rows[0]?.date;
   const lastDate = rows.at(-1)?.date;
+  const summary = summarizeHistory(rows);
+
+  function formatSummary(value: number | null): string {
+    return value === null ? "—" : formatNumber(value, language, { maximumFractionDigits: 4 });
+  }
 
   function formatMonth(date: string | undefined): string {
     if (!date) return "—";
@@ -72,6 +78,25 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
             {option}M
           </button>
         ))}
+      </div>
+
+      <div className="history-summary" aria-label={t("historicalRates")}>
+        <div className="history-stat">
+          <span>{t("latestRate")}</span>
+          <strong>{formatSummary(summary.latest)}</strong>
+        </div>
+        <div className="history-stat">
+          <span>{t("lowestRate")}</span>
+          <strong>{formatSummary(summary.lowest)}</strong>
+        </div>
+        <div className="history-stat">
+          <span>{t("highestRate")}</span>
+          <strong>{formatSummary(summary.highest)}</strong>
+        </div>
+        <div className="history-stat">
+          <span>{t("averageRate")}</span>
+          <strong>{formatSummary(summary.average)}</strong>
+        </div>
       </div>
 
       <div className="chart-wrap">

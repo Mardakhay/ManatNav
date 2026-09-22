@@ -875,6 +875,35 @@ select:focus-visible {
   color: #2d4432;
 }
 
+.history-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.history-stat {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid #e1e7de;
+  border-radius: 11px;
+  background: #f9faf8;
+}
+
+.history-stat span {
+  color: #818a82;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.history-stat strong {
+  color: #2d4432;
+  font-size: 15px;
+}
+
 .chart-wrap {
   margin-top: 12px;
   background: #f9faf8;
@@ -1086,6 +1115,10 @@ select:focus-visible {
     margin-left: -4px;
     margin-right: -4px;
   }
+
+  .history-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 :root[data-theme="dark"] {
@@ -1151,6 +1184,15 @@ select:focus-visible {
 :root[data-theme="dark"] .basket-empty {
   border-color: #334334;
   background: #151d15;
+}
+
+:root[data-theme="dark"] .history-stat {
+  border-color: #334334;
+  background: #151d15;
+}
+
+:root[data-theme="dark"] .history-stat strong {
+  color: #d8e8d3;
 }
 
 :root[data-theme="dark"] .cost-breakdown strong,
