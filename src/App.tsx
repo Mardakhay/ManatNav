@@ -1,16 +1,21 @@
-import { RefreshCw, TrendingUp } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Basket } from "./components/Basket";
 import { Converter } from "./components/Converter";
 import { Header } from "./components/Header";
 import { HistoryChart } from "./components/HistoryChart";
 import { RateCard } from "./components/RateCard";
 import { useCurrencyDashboard } from "./hooks/useCurrencyDashboard";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import type { BasketItem } from "./types/basket";
+import { BASKET_STORAGE_KEY } from "./types/basket";
 import type { SupportedCurrency } from "./types/currency";
 import { CURRENCIES } from "./types/currency";
 
 function App() {
   const [baseCurrency] = useState<SupportedCurrency>("AZN");
   const dashboard = useCurrencyDashboard(baseCurrency);
+  const [basket, setBasket, resetBasket] = useLocalStorage<BasketItem[]>(BASKET_STORAGE_KEY, []);
 
   const ratesMap = useMemo(
     () =>
@@ -19,6 +24,14 @@ function App() {
       ),
     [dashboard.rates]
   );
+
+  function addToBasket(item: BasketItem) {
+    setBasket((prev) => [...prev, item]);
+  }
+
+  function removeFromBasket(id: string) {
+    setBasket((prev) => prev.filter((item) => item.id !== id));
+  }
 
   return (
     <div className="app-shell">
@@ -82,33 +95,8 @@ function App() {
         </section>
 
         <section className="two-column">
-          <Converter rates={ratesMap} />
-
-          <section className="panel accent-panel">
-            <div className="panel-heading">
-              <div>
-                <div className="eyebrow">PORTFOLIO IDEA</div>
-                <h2>Built for local shopping</h2>
-                <p>
-                  This panel is intentionally simple for the first milestone.
-                  Later we can add customs thresholds, delivery fees, saved
-                  baskets, and retailer presets.
-                </p>
-              </div>
-              <TrendingUp size={22} />
-            </div>
-
-            <div className="mini-stats">
-              <div>
-                <span>Selected pair</span>
-                <strong>AZN / {dashboard.selectedHistoryQuote}</strong>
-              </div>
-              <div>
-                <span>Tracked currency</span>
-                <strong>{CURRENCIES[dashboard.selectedHistoryQuote].name}</strong>
-              </div>
-            </div>
-          </section>
+          <Converter rates={ratesMap} onSaveToBasket={addToBasket} />
+          <Basket items={basket} onRemove={removeFromBasket} onClear={resetBasket} />
         </section>
 
         <HistoryChart
@@ -120,6 +108,11 @@ function App() {
         {dashboard.historyError && (
           <div className="muted-note history-note">{dashboard.historyError}</div>
         )}
+
+        <footer className="footer">
+          <span>ManatNav — {CURRENCIES[baseCurrency].name} dashboard</span>
+          <span>Reference rates from Frankfurter · Not financial advice</span>
+        </footer>
       </main>
     </div>
   );
