@@ -14,6 +14,7 @@ import { CURRENCIES } from "./types/currency";
 import { useLanguage } from "./contexts/LanguageContext";
 import { CustomsGuide } from "./components/CustomsGuide";
 import { formatDate } from "./i18n/format";
+import { buildBasketCsv } from "./services/basketExport";
 
 type Theme = "light" | "dark";
 
@@ -69,6 +70,18 @@ function App() {
   function editBasketItem(item: BasketItem) {
     setEditingItem(item);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function exportBasket() {
+    if (basket.length === 0) return;
+
+    const blob = new Blob([buildBasketCsv(basket)], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "manatnav-basket-" + new Date().toISOString().slice(0, 10) + ".csv";
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -157,6 +170,7 @@ function App() {
             onEdit={editBasketItem}
             onDuplicate={duplicateBasketItem}
             onClear={resetBasket}
+            onExport={exportBasket}
           />
         </section>
 

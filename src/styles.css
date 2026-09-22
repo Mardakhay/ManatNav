@@ -846,6 +846,31 @@ select:focus-visible {
   margin-top: 3px;
 }
 
+.basket-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.export-basket-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid #d8dfd4;
+  background: transparent;
+  color: #557057;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.export-basket-button:hover {
+  border-color: #bcc8b9;
+  background: #f4f8f1;
+}
+
 .history-range-controls {
   display: flex;
   align-items: center;

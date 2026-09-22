@@ -1,4 +1,4 @@
-import { Copy, Package, Pencil, Trash2 } from "lucide-react";
+import { Copy, Download, Package, Pencil, Trash2 } from "lucide-react";
 import type { BasketItem } from "../types/basket";
 import { CURRENCIES } from "../types/currency";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -10,9 +10,10 @@ interface BasketProps {
   onEdit: (item: BasketItem) => void;
   onDuplicate: (item: BasketItem) => void;
   onClear: () => void;
+  onExport: () => void;
 }
 
-export function Basket({ items, onRemove, onEdit, onDuplicate, onClear }: BasketProps) {
+export function Basket({ items, onRemove, onEdit, onDuplicate, onClear, onExport }: BasketProps) {
   const { language, t } = useLanguage();
   const total = items.reduce((sum, item) => sum + item.convertedAmount, 0);
 
@@ -99,16 +100,22 @@ export function Basket({ items, onRemove, onEdit, onDuplicate, onClear }: Basket
             </strong>
           </div>
 
-          <button
-            className="clear-basket-button"
-            onClick={() => {
-              if (window.confirm(t("confirmClearBasket"))) {
-                onClear();
-              }
-            }}
-          >
-            {t("clearBasket")}
-          </button>
+          <div className="basket-footer-actions">
+            <button className="export-basket-button" onClick={onExport}>
+              <Download size={14} />
+              {t("exportBasket")}
+            </button>
+            <button
+              className="clear-basket-button"
+              onClick={() => {
+                if (window.confirm(t("confirmClearBasket"))) {
+                  onClear();
+                }
+              }}
+            >
+              {t("clearBasket")}
+            </button>
+          </div>
         </>
       )}
     </section>
