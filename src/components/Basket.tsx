@@ -24,6 +24,10 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
         </div>
       </div>
 
+      <div className="basket-count" aria-live="polite">
+        {items.length} {items.length === 1 ? "saved item" : "saved items"}
+      </div>
+
       {items.length === 0 ? (
         <div className="basket-empty">
           No items saved yet. Convert a price and save it to build your basket.
@@ -42,6 +46,12 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
                   {item.serviceFee !== undefined && item.serviceFee > 0 && (
                     <span className="basket-item-detail">Service fee: {formatBasketAmount(item.serviceFee, item.currency)}</span>
                   )}
+                  <span className="basket-item-total">
+                    Order total: {formatBasketAmount(
+                      item.amount + item.shipping + (item.serviceFee ?? 0),
+                      item.currency
+                    )}
+                  </span>
                 </div>
                 <div className="basket-item-right">
                   <strong>
@@ -60,7 +70,7 @@ export function Basket({ items, onRemove, onClear }: BasketProps) {
             ))}
           </ul>
 
-          <div className="basket-total">
+          <div className="basket-total" aria-live="polite">
             <span>Total estimated cost</span>
             <strong>
               {total.toLocaleString("en-US", { maximumFractionDigits: 2 })} ₼

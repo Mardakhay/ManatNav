@@ -564,6 +564,17 @@ select:focus-visible {
   border-radius: 14px;
 }
 
+.basket-count {
+  align-self: flex-start;
+  margin-top: 16px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #e3ecdf;
+  color: #557057;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .basket-list {
   list-style: none;
   margin: 20px 0 0;
@@ -599,6 +610,13 @@ select:focus-visible {
 .basket-item-detail {
   font-size: 12px;
   color: #7e877e;
+}
+
+.basket-item-total {
+  margin-top: 3px;
+  color: #4f5f51;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .basket-item-right {
