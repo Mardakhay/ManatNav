@@ -798,6 +798,35 @@ select:focus-visible {
   margin-top: 3px;
 }
 
+.history-range-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 16px;
+  color: #7b857b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.history-range-controls button {
+  min-width: 38px;
+  padding: 6px 9px;
+  border: 1px solid #d8dfd4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #667066;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.history-range-controls button:hover,
+.history-range-controls button.active {
+  border-color: #9baa95;
+  background: #eef3eb;
+  color: #2d4432;
+}
+
 .chart-wrap {
   margin-top: 12px;
   background: #f9faf8;
@@ -1092,6 +1121,19 @@ select:focus-visible {
   background: #d3e7c4;
   border-color: #d3e7c4;
   color: #162016;
+}
+
+:root[data-theme="dark"] .history-range-controls button {
+  border-color: #334334;
+  background: #1a231a;
+  color: #aab8a8;
+}
+
+:root[data-theme="dark"] .history-range-controls button:hover,
+:root[data-theme="dark"] .history-range-controls button.active {
+  border-color: #718b6d;
+  background: #2c432d;
+  color: #e8f0e5;
 }
 
 :root[data-theme="dark"] .quick-amount.active,

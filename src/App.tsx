@@ -138,6 +138,8 @@ function App() {
           rows={dashboard.history}
           quote={dashboard.selectedHistoryQuote}
           loading={dashboard.historyLoading}
+          range={dashboard.historyRange}
+          onRangeChange={dashboard.setHistoryRange}
         />
 
         {dashboard.historyError && (

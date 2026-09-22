@@ -1,13 +1,16 @@
 import type { HistoricalRateRow, SupportedCurrency } from "../types/currency";
 import { CURRENCIES } from "../types/currency";
+import { HISTORY_RANGES, type HistoryRange } from "../services/frankfurter";
 
 interface HistoryChartProps {
   rows: HistoricalRateRow[];
   quote: SupportedCurrency;
   loading: boolean;
+  range: HistoryRange;
+  onRangeChange: (range: HistoryRange) => void;
 }
 
-export function HistoryChart({ rows, quote, loading }: HistoryChartProps) {
+export function HistoryChart({ rows, quote, loading, range, onRangeChange }: HistoryChartProps) {
   const width = 760;
   const height = 280;
   const paddingX = 28;
@@ -43,7 +46,7 @@ export function HistoryChart({ rows, quote, loading }: HistoryChartProps) {
         <div>
           <div className="eyebrow">HISTORY</div>
           <h2>AZN vs {quote}</h2>
-          <p>Monthly reference rate over the last 12 months.</p>
+          <p>Monthly reference rate over the last {range} months.</p>
         </div>
 
         <div className="legend-value">
@@ -52,6 +55,20 @@ export function HistoryChart({ rows, quote, loading }: HistoryChartProps) {
             : "—"}
           <small>{CURRENCIES[quote].symbol} / AZN</small>
         </div>
+      </div>
+
+      <div className="history-range-controls" role="group" aria-label="History range">
+        <span>Range</span>
+        {HISTORY_RANGES.map((option) => (
+          <button
+            key={option}
+            className={range === option ? "active" : ""}
+            onClick={() => onRangeChange(option)}
+            aria-pressed={range === option}
+          >
+            {option}M
+          </button>
+        ))}
       </div>
 
       <div className="chart-wrap">
