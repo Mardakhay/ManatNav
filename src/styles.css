@@ -13,6 +13,7 @@
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top right, rgba(211, 231, 196, 0.35), transparent 35%),
     #f6f7f3;
@@ -90,6 +91,7 @@ select:focus-visible {
 
 .page {
   max-width: 1180px;
+  width: 100%;
   margin: 0 auto;
   padding: 30px 28px 56px;
 }
@@ -337,6 +339,7 @@ select:focus-visible {
 .converter-grid input,
 .converter-grid select {
   width: 100%;
+  min-width: 0;
   height: 45px;
   border: 1px solid #d8dfd5;
   background: #ffffff;
@@ -377,6 +380,8 @@ select:focus-visible {
 .conversion-result strong {
   font-size: 22px;
   letter-spacing: -0.035em;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .cost-breakdown {
@@ -426,6 +431,7 @@ select:focus-visible {
 
 .shipping-grid input {
   width: 100%;
+  min-width: 0;
   height: 45px;
   border: 1px solid #d8dfd5;
   background: #ffffff;
@@ -483,6 +489,7 @@ select:focus-visible {
 
 .save-label-input {
   flex: 1 1 180px;
+  min-width: 0;
   height: 45px;
   border: 1px solid #d8dfd5;
   background: #ffffff;
@@ -730,6 +737,7 @@ select:focus-visible {
 
 .chart {
   width: 100%;
+  aspect-ratio: 760 / 280;
   min-height: 250px;
   display: block;
 }
@@ -798,6 +806,12 @@ select:focus-visible {
 }
 
 @media (max-width: 980px) {
+  .topbar,
+  .page {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
   .rates-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -824,6 +838,11 @@ select:focus-visible {
     margin-bottom: 26px;
     padding: 28px 22px 30px;
     border-radius: 22px;
+  }
+
+  .panel {
+    padding: 18px;
+    border-radius: 18px;
   }
 
   .rates-grid {
@@ -879,5 +898,35 @@ select:focus-visible {
 
   .footer {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .status-pill {
+    align-self: flex-start;
+  }
+
+  .converter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .converter-grid label:first-child,
+  .conversion-result {
+    grid-column: 1 / -1;
+  }
+
+  .swap-button {
+    width: 100%;
+  }
+
+  .chart-wrap {
+    margin-left: -4px;
+    margin-right: -4px;
   }
 }
