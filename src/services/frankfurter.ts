@@ -65,6 +65,36 @@ export async function fetchTimeSeries(
   return parseRateRows(await getJson(url.toString(), signal));
 }
 
+export async function fetchTrendRates(
+  base: SupportedCurrency,
+  quotes: SupportedCurrency[],
+  days: number = 14,
+  signal?: AbortSignal
+): Promise<Record<string, number[]>> {
+  const filteredQuotes = quotes.filter((currency) => currency !== base);
+  if (filteredQuotes.length === 0) return {};
+
+  const today = new Date();
+  const from = new Date(today);
+  from.setDate(today.getDate() - days);
+
+  const url = new URL(`${API_URL}/rates`);
+  url.searchParams.set("base", base);
+  url.searchParams.set("quotes", filteredQuotes.join(","));
+  url.searchParams.set("from", toISODate(from));
+  url.searchParams.set("to", toISODate(today));
+
+  const rows = parseRateRows(await getJson(url.toString(), signal));
+  const grouped: Record<string, number[]> = {};
+
+  for (const row of rows) {
+    if (!grouped[row.quote]) grouped[row.quote] = [];
+    grouped[row.quote].push(row.rate);
+  }
+
+  return grouped;
+}
+
 export function parseRateRows(payload: unknown): Array<LatestRateRow | HistoricalRateRow> {
   if (!Array.isArray(payload)) {
     throw new Error("Frankfurter returned an unexpected response.");

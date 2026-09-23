@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   fetchLatestRates,
   fetchTimeSeries,
+  fetchTrendRates,
   type HistoryRange,
 } from "../services/frankfurter";
 import {
@@ -17,6 +18,7 @@ import {
   writeHistoricalRatesCache,
   writeLatestRatesCache,
 } from "../services/rateCache";
+import { computeTrend, type TrendSummary } from "../services/trend";
 
 const DEFAULT_QUOTES = SUPPORTED_CURRENCIES.filter((currency) => currency !== "AZN");
 
@@ -35,9 +37,11 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
   const [ratesCachedAt, setRatesCachedAt] = useState<string | null>(null);
   const [historyStale, setHistoryStale] = useState(false);
   const [historyCachedAt, setHistoryCachedAt] = useState<string | null>(null);
+  const [trends, setTrends] = useState<Record<string, TrendSummary>>({});
 
   const latestControllerRef = useRef<AbortController | null>(null);
   const historyControllerRef = useRef<AbortController | null>(null);
+  const trendControllerRef = useRef<AbortController | null>(null);
 
   const loadLatest = useCallback(async () => {
     latestControllerRef.current?.abort();
@@ -118,10 +122,38 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
     }
   }, [baseCurrency, historyRange, selectedHistoryQuote]);
 
+  const loadTrends = useCallback(async () => {
+    trendControllerRef.current?.abort();
+    const controller = new AbortController();
+    trendControllerRef.current = controller;
+
+    try {
+      const grouped = await fetchTrendRates(baseCurrency, DEFAULT_QUOTES, 14, controller.signal);
+      if (controller.signal.aborted || trendControllerRef.current !== controller) return;
+
+      const computed: Record<string, TrendSummary> = {};
+      for (const [quote, rateSeries] of Object.entries(grouped)) {
+        const summary = computeTrend(rateSeries);
+        if (summary) computed[quote] = summary;
+      }
+      setTrends(computed);
+    } catch {
+      // Trend data is supplementary; silently skip on failure.
+    } finally {
+      if (trendControllerRef.current === controller) {
+        trendControllerRef.current = null;
+      }
+    }
+  }, [baseCurrency]);
+
   useEffect(() => {
     void loadLatest();
-    return () => latestControllerRef.current?.abort();
-  }, [loadLatest]);
+    void loadTrends();
+    return () => {
+      latestControllerRef.current?.abort();
+      trendControllerRef.current?.abort();
+    };
+  }, [loadLatest, loadTrends]);
 
   useEffect(() => {
     void loadHistory();
@@ -145,6 +177,7 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
     historyStale,
     historyCachedAt,
     refresh: loadLatest,
+    trends,
     currencyMeta: CURRENCIES[baseCurrency],
   };
 }

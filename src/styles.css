@@ -259,9 +259,66 @@ select:focus-visible {
 }
 
 .rate-card-foot {
-  margin-top: 7px;
   color: #89918a;
   font-size: 12px;
+}
+
+.rate-card-bottom {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rate-card-trend-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rate-card-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.rate-card-trend-pct {
+  white-space: nowrap;
+}
+
+.trend-up {
+  color: #2d8f4e;
+}
+
+.trend-down {
+  color: #c45a3e;
+}
+
+.trend-flat {
+  color: #89918a;
+}
+
+.sparkline {
+  flex-shrink: 0;
+  display: block;
+}
+
+.sparkline-up {
+  stroke: #2d8f4e;
+  color: #2d8f4e;
+}
+
+.sparkline-down {
+  stroke: #c45a3e;
+  color: #c45a3e;
+}
+
+.sparkline-start {
+  color: #b8c2b6;
 }
 
 .skeleton-card {
@@ -1430,4 +1487,24 @@ select:focus-visible {
 
 :root[data-theme="dark"] .footer {
   border-color: #334334;
+}
+
+:root[data-theme="dark"] .trend-up,
+:root[data-theme="dark"] .sparkline-up {
+  color: #5bc97e;
+  stroke: #5bc97e;
+}
+
+:root[data-theme="dark"] .trend-down,
+:root[data-theme="dark"] .sparkline-down {
+  color: #e87a5e;
+  stroke: #e87a5e;
+}
+
+:root[data-theme="dark"] .trend-flat {
+  color: #9eab9c;
+}
+
+:root[data-theme="dark"] .sparkline-start {
+  color: #5a6b5a;
 }

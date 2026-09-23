@@ -157,6 +157,7 @@ function App() {
                           row.quote as SupportedCurrency
                         )
                       }
+                      trend={dashboard.trends[row.quote]}
                     />
                   ))}
           </div>

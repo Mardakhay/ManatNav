@@ -8,7 +8,10 @@ declare module "lucide-react" {
 
   export const Activity: ComponentType<LucideProps>;
   export const ArrowDownUp: ComponentType<LucideProps>;
+  export const ArrowDown: ComponentType<LucideProps>;
+  export const ArrowUp: ComponentType<LucideProps>;
   export const Check: ComponentType<LucideProps>;
+  export const Minus: ComponentType<LucideProps>;
   export const CircleDollarSign: ComponentType<LucideProps>;
   export const Copy: ComponentType<LucideProps>;
   export const Download: ComponentType<LucideProps>;
