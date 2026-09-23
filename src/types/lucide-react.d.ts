@@ -11,7 +11,11 @@ declare module "lucide-react" {
   export const ArrowDown: ComponentType<LucideProps>;
   export const ArrowUp: ComponentType<LucideProps>;
   export const Check: ComponentType<LucideProps>;
+  export const CloudOff: ComponentType<LucideProps>;
   export const Minus: ComponentType<LucideProps>;
+  export const RefreshCw: ComponentType<LucideProps>;
+  export const Rocket: ComponentType<LucideProps>;
+  export const WifiOff: ComponentType<LucideProps>;
   export const CircleDollarSign: ComponentType<LucideProps>;
   export const Copy: ComponentType<LucideProps>;
   export const Download: ComponentType<LucideProps>;

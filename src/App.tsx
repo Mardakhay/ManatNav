@@ -1,4 +1,4 @@
-import { RefreshCw } from "lucide-react";
+import { CloudOff, RefreshCw, Rocket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Basket } from "./components/Basket";
 import { Converter } from "./components/Converter";
@@ -7,6 +7,7 @@ import { HistoryChart } from "./components/HistoryChart";
 import { RateCard } from "./components/RateCard";
 import { useCurrencyDashboard } from "./hooks/useCurrencyDashboard";
 import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useServiceWorker } from "./hooks/useServiceWorker";
 import type { BasketItem } from "./types/basket";
 import { BASKET_STORAGE_KEY, isBasketItem } from "./types/basket";
 import type { SupportedCurrency } from "./types/currency";
@@ -26,6 +27,7 @@ function App() {
   const { language, t } = useLanguage();
   const [baseCurrency] = useState<SupportedCurrency>("AZN");
   const dashboard = useCurrencyDashboard(baseCurrency);
+  const { isOnline, updateAvailable, applyUpdate, dismissUpdate } = useServiceWorker();
   const [theme, setTheme] = useLocalStorage<Theme>("manatnav:theme", "light", isTheme);
   const [basket, setBasket, resetBasket] = useLocalStorage<BasketItem[]>(
     BASKET_STORAGE_KEY,
@@ -117,6 +119,30 @@ function App() {
             {t("refresh")}
           </button>
         </section>
+
+        {updateAvailable && (
+          <div className="update-banner" role="alert">
+            <div className="update-banner-content">
+              <Rocket size={16} />
+              <span>{t("updateAvailable")}</span>
+            </div>
+            <div className="update-banner-actions">
+              <button className="update-banner-button" onClick={applyUpdate}>
+                {t("updateNow")}
+              </button>
+              <button className="update-banner-dismiss" onClick={dismissUpdate}>
+                {t("updateLater")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!isOnline && (
+          <div className="offline-banner" role="status">
+            <CloudOff size={15} />
+            {t("offlineMode")}
+          </div>
+        )}
 
         {dashboard.error && (
           <div className="error-banner" role="alert">
