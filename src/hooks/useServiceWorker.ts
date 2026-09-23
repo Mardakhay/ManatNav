@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
 export interface ServiceWorkerState {
   isOnline: boolean;
   updateAvailable: boolean;
   applyUpdate: () => void;
   dismissUpdate: () => void;
+  installAvailable: boolean;
+  isInstalled: boolean;
+  promptInstall: () => void;
+  dismissInstall: () => void;
 }
 
 export function useServiceWorker(): ServiceWorkerState {
@@ -12,6 +21,10 @@ export function useServiceWorker(): ServiceWorkerState {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [waitingRegistration, setWaitingRegistration] =
     useState<ServiceWorkerRegistration | null>(null);
+  const [installAvailable, setInstallAvailable] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     function handleOnline() {
@@ -24,10 +37,32 @@ export function useServiceWorker(): ServiceWorkerState {
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
+    function handleBeforeInstallPrompt(event: Event) {
+      event.preventDefault();
+      setDeferredPrompt(event as BeforeInstallPromptEvent);
+      setInstallAvailable(true);
+    }
+
+    function handleAppInstalled() {
+      setIsInstalled(true);
+      setInstallAvailable(false);
+      setDeferredPrompt(null);
+    }
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    if (standalone) setIsInstalled(true);
+
     if (!("serviceWorker" in navigator)) {
       return () => {
         window.removeEventListener("online", handleOnline);
         window.removeEventListener("offline", handleOffline);
+        window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+        window.removeEventListener("appinstalled", handleAppInstalled);
       };
     }
 
@@ -61,6 +96,8 @@ export function useServiceWorker(): ServiceWorkerState {
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
       navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
       registration?.removeEventListener?.("updatefound", () => {});
     };
@@ -76,5 +113,29 @@ export function useServiceWorker(): ServiceWorkerState {
     setUpdateAvailable(false);
   }
 
-  return { isOnline, updateAvailable, applyUpdate, dismissUpdate };
+  async function promptInstall() {
+    if (!deferredPrompt) return;
+    await deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    if (choice.outcome === "accepted") {
+      setIsInstalled(true);
+    }
+    setInstallAvailable(false);
+    setDeferredPrompt(null);
+  }
+
+  function dismissInstall() {
+    setInstallAvailable(false);
+  }
+
+  return {
+    isOnline,
+    updateAvailable,
+    applyUpdate,
+    dismissUpdate,
+    installAvailable,
+    isInstalled,
+    promptInstall,
+    dismissInstall,
+  };
 }

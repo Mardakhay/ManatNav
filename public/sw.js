@@ -1,7 +1,7 @@
 const CACHE_VERSION = "manatnav-v1";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const API_CACHE = `${CACHE_VERSION}-api`;
-const SHELL_URLS = ["/", "/index.html", "/manifest.webmanifest", "/favicon.svg"];
+const SHELL_URLS = ["/", "/index.html", "/manifest.webmanifest", "/favicon.svg", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

@@ -1,4 +1,4 @@
-import { CloudOff, RefreshCw, Rocket } from "lucide-react";
+import { CloudOff, Download, RefreshCw, Rocket } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Basket } from "./components/Basket";
 import { Converter } from "./components/Converter";
@@ -27,7 +27,7 @@ function App() {
   const { language, t } = useLanguage();
   const [baseCurrency] = useState<SupportedCurrency>("AZN");
   const dashboard = useCurrencyDashboard(baseCurrency);
-  const { isOnline, updateAvailable, applyUpdate, dismissUpdate } = useServiceWorker();
+  const { isOnline, updateAvailable, applyUpdate, dismissUpdate, installAvailable, promptInstall, dismissInstall } = useServiceWorker();
   const [theme, setTheme] = useLocalStorage<Theme>("manatnav:theme", "light", isTheme);
   const [basket, setBasket, resetBasket] = useLocalStorage<BasketItem[]>(
     BASKET_STORAGE_KEY,
@@ -132,6 +132,26 @@ function App() {
               </button>
               <button className="update-banner-dismiss" onClick={dismissUpdate}>
                 {t("updateLater")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {installAvailable && (
+          <div className="install-banner" role="alert">
+            <div className="install-banner-content">
+              <Download size={16} />
+              <div>
+                <strong>{t("installApp")}</strong>
+                <span>{t("installDescription")}</span>
+              </div>
+            </div>
+            <div className="install-banner-actions">
+              <button className="install-banner-button" onClick={promptInstall}>
+                {t("installNow")}
+              </button>
+              <button className="install-banner-dismiss" onClick={dismissInstall}>
+                {t("installLater")}
               </button>
             </div>
           </div>
