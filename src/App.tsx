@@ -8,6 +8,7 @@ import { RateCard } from "./components/RateCard";
 import { useCurrencyDashboard } from "./hooks/useCurrencyDashboard";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useServiceWorker } from "./hooks/useServiceWorker";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import type { BasketItem } from "./types/basket";
 import { BASKET_STORAGE_KEY, isBasketItem } from "./types/basket";
 import type { SupportedCurrency } from "./types/currency";
@@ -40,6 +41,16 @@ function App() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
+
+  useKeyboardShortcuts({
+    onRefresh: () => void dashboard.refresh(),
+    onSwap: () => document.getElementById("swap-button")?.click(),
+    onFocusAmount: () => {
+      const input = document.getElementById("amount-input") as HTMLInputElement | null;
+      input?.focus();
+      input?.select();
+    },
+  });
 
   const ratesMap = useMemo(
     () =>
@@ -187,7 +198,7 @@ function App() {
 
           <div className="rates-grid">
             {dashboard.loading
-              ? ["USD", "EUR", "TRY", "RUB", "GBP"].map((code) => (
+              ? ["USD", "EUR", "TRY", "RUB", "GBP", "CNY", "GEL", "AED"].map((code) => (
                   <div className="rate-card skeleton-card" key={code} aria-hidden="true" />
                 ))
               : dashboard.rates.length === 0 && !dashboard.error

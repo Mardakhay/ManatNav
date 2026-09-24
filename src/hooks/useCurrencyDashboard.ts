@@ -160,6 +160,31 @@ export function useCurrencyDashboard(baseCurrency: SupportedCurrency) {
     return () => historyControllerRef.current?.abort();
   }, [loadHistory]);
 
+  useEffect(() => {
+    const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000;
+
+    function handleVisibilityChange() {
+      if (!document.hidden) {
+        void loadLatest();
+        void loadTrends();
+      }
+    }
+
+    function handleInterval() {
+      if (!document.hidden) {
+        void loadLatest();
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const intervalId = window.setInterval(handleInterval, AUTO_REFRESH_INTERVAL);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.clearInterval(intervalId);
+    };
+  }, [loadLatest, loadTrends]);
+
   return {
     rates,
     history,

@@ -60,7 +60,8 @@ export function Converter({ rates, onSaveToBasket, editingItem, onCancelEdit }: 
     trendyol: "trendyolShippingNote",
     amazon: "amazonShippingNote",
     aliexpress: "aliexpressShippingNote",
-  }[retailer.id] as "customShippingNote" | "trendyolShippingNote" | "amazonShippingNote" | "aliexpressShippingNote";
+    taobao: "taobaoShippingNote",
+  }[retailer.id] as "customShippingNote" | "trendyolShippingNote" | "amazonShippingNote" | "aliexpressShippingNote" | "taobaoShippingNote";
 
   const directRate = useMemo(() => {
     return getConversionRate(from, to, rates);
@@ -222,6 +223,7 @@ export function Converter({ rates, onSaveToBasket, editingItem, onCancelEdit }: 
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
             aria-label={t("amount")}
+            id="amount-input"
           />
         </label>
 
@@ -237,6 +239,7 @@ export function Converter({ rates, onSaveToBasket, editingItem, onCancelEdit }: 
         <button
           className="swap-button"
           aria-label={t("swapCurrencies")}
+          id="swap-button"
           onClick={() => {
             setFrom(to);
             setTo(from);
@@ -364,6 +367,10 @@ export function Converter({ rates, onSaveToBasket, editingItem, onCancelEdit }: 
 
       <div className="muted-note">
         {t("referenceRateNote")}
+      </div>
+
+      <div className="muted-note keyboard-hint">
+        <kbd>R</kbd> {t("refresh")} · <kbd>S</kbd> {t("swapCurrencies")} · <kbd>/</kbd> {t("amount")}
       </div>
     </section>
   );

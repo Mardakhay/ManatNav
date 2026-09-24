@@ -37,6 +37,13 @@ export const RETAILERS: RetailerPreset[] = [
     defaultShipping: 0,
     shippingNote: "AliExpress typically ships with free or low-cost standard shipping. Expedited options cost extra.",
   },
+  {
+    id: "taobao",
+    name: "Taobao",
+    defaultCurrency: "CNY",
+    defaultShipping: 0,
+    shippingNote: "Taobao shipping within China is often inexpensive. Use a proxy service for delivery to Azerbaijan.",
+  },
 ];
 
 export const DEFAULT_RETAILER_ID = "custom";
