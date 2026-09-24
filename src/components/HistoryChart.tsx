@@ -129,6 +129,24 @@ export function HistoryChart({ rows, quote, loading, range, onRangeChange }: His
             <text x={width - paddingRight} y={height - 10} textAnchor="end" className="chart-date-label">
               {formatMonth(lastDate)}
             </text>
+            <defs>
+              <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--chart-fill-from)" />
+                <stop offset="100%" stopColor="var(--chart-fill-to)" />
+              </linearGradient>
+            </defs>
+            {(() => {
+              const areaPoints = rows.length > 0
+                ? `M ${paddingLeft},${height - paddingBottom} ` +
+                  rows.map((row, index) => {
+                    const x = paddingLeft + (index / Math.max(rows.length - 1, 1)) * plotWidth;
+                    const y = paddingTop + (1 - (row.rate - min) / span) * plotHeight;
+                    return `L ${x},${y}`;
+                  }).join(" ") +
+                  ` L ${paddingLeft + plotWidth},${height - paddingBottom} Z`
+                : "";
+              return <path d={areaPoints} className="chart-area" />;
+            })()}
             <polyline points={points} fill="none" className="chart-line" />
             {rows.map((row, index) => {
               const x = paddingLeft + (index / Math.max(rows.length - 1, 1)) * plotWidth;
