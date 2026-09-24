@@ -986,6 +986,7 @@ select:focus-visible {
 }
 
 .muted-note {
+  margin-top: 14px;
   font-size: 11px;
   color: var(--text-subtle);
   line-height: 1.55;
